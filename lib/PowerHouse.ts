@@ -8,19 +8,23 @@ export const addSettings = async ({
   promotionImageUrl,
 }: CreateRequestBody) => {
   try {
-    const res = await fetch("http://localhost:3001/api/settings", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        bannerTitle,
-        bannerLink,
-        promotionTitle,
-        promotionLink,
-        promotionImageUrl,
-      }),
-    });
+    //http://localhost:3001
+    const res = await fetch(
+      "https://store24-admin-sepia.vercel.app/api/settings",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          bannerTitle,
+          bannerLink,
+          promotionTitle,
+          promotionLink,
+          promotionImageUrl,
+        }),
+      }
+    );
 
     const result = await res.json();
     return result;
@@ -31,10 +35,13 @@ export const addSettings = async ({
 
 export const getSettings = async () => {
   try {
-    const res = await fetch("http://localhost:3001/api/settings", {
-      method: "GET",
-      cache: "no-store", // Ensures the fetch result is not cached
-    });
+    const res = await fetch(
+      "https://store24-admin-sepia.vercel.app/api/settings",
+      {
+        method: "GET",
+        cache: "no-store", // Ensures the fetch result is not cached
+      }
+    );
     const result = await res.json();
     return result;
   } catch (error) {
@@ -44,13 +51,16 @@ export const getSettings = async () => {
 
 export const updateSettings = async (payload: UpdateSettingsPayload) => {
   try {
-    const response = await fetch("http://localhost:3001/api/settings", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    const response = await fetch(
+      "https://store24-admin-sepia.vercel.app/api/settings",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
