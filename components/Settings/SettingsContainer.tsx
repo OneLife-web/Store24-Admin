@@ -11,20 +11,26 @@ import {
 import { app } from "@/utils/firebase";
 import { Loader2, UploadCloudIcon } from "lucide-react";
 import Image from "next/image";
-import { addSettings } from "@/lib/PowerHouse";
+import { updateSettings } from "@/lib/PowerHouse";
+import { Settings } from "@/types";
+import { toast } from "@/hooks/use-toast";
 
 const storage = getStorage(app);
 
-const SettingsContainer = () => {
+const SettingsContainer = ({ data }: { data: Settings }) => {
+  if (!data) {
+    <div>Loading...</div>;
+  }
+
   const [banner, setBanner] = useState({
-    title: "",
-    link: "",
+    title: data.banner?.title || "",
+    link: data.banner?.link || "",
   });
 
   const [promotion, setPromotion] = useState({
-    title: "",
-    link: "",
-    imageUrl: "",
+    title: data.promotion?.title || "",
+    link: data.promotion?.link || "",
+    imageUrl: data.promotion?.imageUrl || "",
   });
 
   //const [error, setError] = useState("");
@@ -76,13 +82,20 @@ const SettingsContainer = () => {
         promotionLink: promotion.link,
         promotionImageUrl: promotion.imageUrl,
       };
-      const res = await addSettings(payload);
+      const res = await updateSettings(payload);
       if (res.status === 200) {
+        toast({
+          title: "Settings updated",
+        });
         setLoading(false);
-       // setError("");
+        // setError("");
       }
     } catch (error) {
       console.log(error);
+      setLoading(false);
+      toast({
+        title: "Sorry an error occured",
+      });
     }
   };
 
@@ -209,7 +222,7 @@ const SettingsContainer = () => {
               <Loader2 />
             </span>
           ) : (
-            <span>Submit</span>
+            <span>Update</span>
           )}
         </button>
       </form>

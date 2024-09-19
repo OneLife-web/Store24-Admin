@@ -17,7 +17,20 @@ export interface IPromotionInput {
   imageUrl: string;
 }
 
+export interface Settings {
+  banner: IBannerInput;
+  promotion: IPromotionInput;
+}
+
 export interface CreateRequestBody {
+  bannerTitle: string;
+  bannerLink: string;
+  promotionTitle: string;
+  promotionLink: string;
+  promotionImageUrl: string;
+}
+
+interface UpdateSettingsPayload {
   bannerTitle: string;
   bannerLink: string;
   promotionTitle: string;
@@ -34,4 +47,3 @@ export interface UpdateRequestBody {
   promotionLink: string;
   promotionImageUrl: string;
 }
-

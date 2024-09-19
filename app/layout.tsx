@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Poppins } from "next/font/google";
 import Header from "@/components/Navigation/Header";
+import { Toaster } from "@/components/ui/toaster";
 
 const poppins = Poppins({
   subsets: ["latin"], // Subset if needed, Google Fonts fetches automatically
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className={`${poppins.className} relative antialiased`}>
         <Header />
         {children}
+        <Toaster />
       </body>
     </html>
   );

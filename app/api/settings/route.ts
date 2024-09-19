@@ -88,10 +88,12 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(
-      { banner: settings.banner, promotion: settings.promotion },
-      { status: 200 }
-    );
+    return NextResponse.json({
+      message: "Settings updated successfully",
+      status: 200,
+      success: true,
+    });
+
   } catch (error) {
     console.error("Error updating settings:", error);
     return NextResponse.json({ error: "Error updating data" }, { status: 500 });
