@@ -1,4 +1,4 @@
-import { CreateRequestBody, IBannerInput, IPromotionInput } from "@/types";
+import { CreateRequestBody } from "@/types";
 
 export const addSettings = async ({
   bannerTitle,

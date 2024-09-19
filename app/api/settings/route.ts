@@ -1,6 +1,6 @@
 import { CreateRequestBody, UpdateRequestBody } from "@/types";
 import { connectToDb } from "@/utils/config/mongodb";
-import { IBanner, IPromotion, Settings } from "@/utils/models/Settings";
+import { Settings } from "@/utils/models/Settings";
 import { NextRequest, NextResponse } from "next/server";
 
 // POST request for creating a new banner and promotion

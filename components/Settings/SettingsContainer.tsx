@@ -27,7 +27,7 @@ const SettingsContainer = () => {
     imageUrl: "",
   });
 
-  const [error, setError] = useState("");
+  //const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -79,7 +79,7 @@ const SettingsContainer = () => {
       const res = await addSettings(payload);
       if (res.status === 200) {
         setLoading(false);
-        setError("");
+       // setError("");
       }
     } catch (error) {
       console.log(error);
