@@ -11,7 +11,7 @@ import {
 import { app } from "@/utils/firebase";
 import { Loader2, Trash2, UploadCloudIcon } from "lucide-react";
 import Image from "next/image";
-import { addSettings, updateSettings } from "@/lib/PowerHouse";
+import { updateSettings } from "@/lib/PowerHouse";
 import { Settings } from "@/types";
 import { toast } from "@/hooks/use-toast";
 
@@ -84,7 +84,7 @@ const SettingsContainer = ({ data }: { data: Settings }) => {
         promotionImageUrl: promotion.imageUrl,
         promotionFeatures: promotion.features,
       };
-      const res = await addSettings(payload);
+      const res = await updateSettings(payload);
       if (res.status === 200) {
         toast({
           title: "Settings updated",
