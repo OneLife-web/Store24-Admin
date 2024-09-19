@@ -140,7 +140,7 @@ const SettingsContainer = () => {
                     >
                       <path
                         fill="none"
-                        stroke="#FFF2DF"
+                        stroke="#F8AF24"
                         strokeWidth="4"
                         strokeMiterlimit="10"
                         d="M25,5 A20,20 0 1,1 24.999,5"
@@ -185,7 +185,7 @@ const SettingsContainer = () => {
                       fileInput.click();
                     }
                   }}
-                  className="absolute right-5 top-5 flex items-center justify-center w-[56px] h-[56px] rounded-full bg-secondary"
+                  className="absolute right-5 top-5 flex items-center justify-center w-[56px] h-[56px] rounded-full bg-secondaryBg"
                 >
                   <input
                     type="file"
@@ -202,7 +202,7 @@ const SettingsContainer = () => {
         <button
           type="submit"
           disabled={loading}
-          className="bg-secondary flex items-center justify-center mt-5 rounded-full h-[48px] font-medium"
+          className="bg-secondaryBg flex items-center justify-center mt-5 rounded-full h-[48px] font-medium"
         >
           {loading ? (
             <span className="animate-spin">
