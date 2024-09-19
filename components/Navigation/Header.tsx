@@ -12,7 +12,7 @@ const Header = () => {
     <nav className="py-5 px-[3%] sticky top-[-170px] z-10 bg-white">
       <div className="bg-secondary rounded-xl flex items-center justify-center">
         <Link href="/">
-          <Image src="/logo.jpeg" width={150} height={150} alt="logo" />
+          <Image src="/logo.jpeg" width={150} height={150} alt="logo" priority />
         </Link>
       </div>
       <div className="flex items-center gap-5 text-primary w-fit mx-auto py-5">

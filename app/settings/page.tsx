@@ -3,7 +3,7 @@ import React from "react";
 
 const SettingsPage = () => {
   return (
-    <main className="py-5 px-[3%]">
+    <main className="pt-5 pb-20 px-[3%] min-h-[100vh]">
       <SettingsContainer />
     </main>
   );

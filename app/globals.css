@@ -11,5 +11,5 @@ body {
 }
 
 label {
-  @apply text-sm font-medium;
+  @apply text-sm font-medium ml-3;
 }
