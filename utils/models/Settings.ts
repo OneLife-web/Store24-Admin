@@ -1,4 +1,4 @@
-import { Schema, model, models, Document } from 'mongoose';
+import { Schema, model, models, Document } from "mongoose";
 
 // Define the interface for banner and promotion
 export interface IBanner extends Document {
@@ -10,6 +10,7 @@ export interface IPromotion extends Document {
   title: string;
   link: string;
   imageUrl: string;
+  features: string[];
 }
 
 // Define the interface for the Settings document
@@ -28,19 +29,24 @@ const PromotionSchema = new Schema<IPromotion>({
   title: { type: String, required: true },
   link: { type: String, required: true },
   imageUrl: { type: String, required: true },
+  features: {
+    type: [String], // Array of strings
+    required: true,
+  },
 });
 
 // Define the Settings schema that includes banner and promotion
 const SettingsSchema = new Schema<ISettings>({
-  banner: { 
-    type: BannerSchema, 
-    required: true 
+  banner: {
+    type: BannerSchema,
+    required: true,
   },
-  promotion: { 
-    type: PromotionSchema, 
-    required: true 
+  promotion: {
+    type: PromotionSchema,
+    required: true,
   },
 });
 
 // Create the model
-export const Settings = models.Settings || model<ISettings>('Settings', SettingsSchema);
+export const Settings =
+  models.Settings || model<ISettings>("Settings", SettingsSchema);

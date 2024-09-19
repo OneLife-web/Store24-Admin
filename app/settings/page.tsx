@@ -5,6 +5,7 @@ import React from "react";
 
 const SettingsPage = async () => {
   const data: Settings = await getSettings();
+  console.log(data);
   return (
     <main className="pt-5 pb-20 px-[3%] min-h-[100vh]">
       <SettingsContainer data={data} />

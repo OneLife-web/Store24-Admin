@@ -15,6 +15,7 @@ export interface IPromotionInput {
   title: string;
   link: string;
   imageUrl: string;
+  features: string[];
 }
 
 export interface Settings {
@@ -28,6 +29,7 @@ export interface CreateRequestBody {
   promotionTitle: string;
   promotionLink: string;
   promotionImageUrl: string;
+  promotionFeatures: string[];
 }
 
 interface UpdateSettingsPayload {
@@ -36,6 +38,7 @@ interface UpdateSettingsPayload {
   promotionTitle: string;
   promotionLink: string;
   promotionImageUrl: string;
+  promotionFeatures: string[];
 }
 
 export interface UpdateRequestBody {
@@ -46,4 +49,5 @@ export interface UpdateRequestBody {
   promotionTitle: string;
   promotionLink: string;
   promotionImageUrl: string;
+  promotionFeatures: string[];
 }

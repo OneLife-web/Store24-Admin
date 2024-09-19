@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
         title: body.promotionTitle,
         link: body.promotionLink,
         imageUrl: body.promotionImageUrl,
+        features: body.promotionFeatures,
       },
     });
 
@@ -76,6 +77,7 @@ export async function PUT(request: NextRequest) {
           "promotion.title": body.promotionTitle,
           "promotion.link": body.promotionLink,
           "promotion.imageUrl": body.promotionImageUrl,
+          "promotion.features": body.promotionFeatures,
         },
       },
       { new: true } // Return the updated document
@@ -93,7 +95,6 @@ export async function PUT(request: NextRequest) {
       status: 200,
       success: true,
     });
-
   } catch (error) {
     console.error("Error updating settings:", error);
     return NextResponse.json({ error: "Error updating data" }, { status: 500 });

@@ -6,6 +6,7 @@ export const addSettings = async ({
   promotionTitle,
   promotionLink,
   promotionImageUrl,
+  promotionFeatures,
 }: CreateRequestBody) => {
   try {
     //
@@ -20,6 +21,7 @@ export const addSettings = async ({
         promotionTitle,
         promotionLink,
         promotionImageUrl,
+        promotionFeatures,
       }),
     });
 

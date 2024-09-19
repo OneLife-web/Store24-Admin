@@ -9,9 +9,9 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { app } from "@/utils/firebase";
-import { Loader2, UploadCloudIcon } from "lucide-react";
+import { Loader2, Trash2, UploadCloudIcon } from "lucide-react";
 import Image from "next/image";
-import { updateSettings } from "@/lib/PowerHouse";
+import { addSettings, updateSettings } from "@/lib/PowerHouse";
 import { Settings } from "@/types";
 import { toast } from "@/hooks/use-toast";
 
@@ -31,6 +31,7 @@ const SettingsContainer = ({ data }: { data: Settings }) => {
     title: data?.promotion?.title || "",
     link: data?.promotion?.link || "",
     imageUrl: data?.promotion?.imageUrl || "",
+    features: data?.promotion?.features || [], // Add features here
   });
 
   //const [error, setError] = useState("");
@@ -81,8 +82,9 @@ const SettingsContainer = ({ data }: { data: Settings }) => {
         promotionTitle: promotion.title,
         promotionLink: promotion.link,
         promotionImageUrl: promotion.imageUrl,
+        promotionFeatures: promotion.features,
       };
-      const res = await updateSettings(payload);
+      const res = await addSettings(payload);
       if (res.status === 200) {
         toast({
           title: "Settings updated",
@@ -101,8 +103,8 @@ const SettingsContainer = ({ data }: { data: Settings }) => {
 
   return (
     <section>
-      <form className="grid gap-6" onSubmit={handleSubmit}>
-        <div className="bg-gray-50 py-5 pb-10 p-[3%] rounded-xl w-full">
+      <form onSubmit={handleSubmit}>
+        <div className="bg-gray-50 grid gap-6 py-5 pb-10 p-[3%] rounded-xl w-full">
           <div>
             <label>Top Banner</label>
             <div className="mt-3 grid gap-4">
@@ -140,6 +142,55 @@ const SettingsContainer = ({ data }: { data: Settings }) => {
                 }
                 placeholder="Enter Link"
               />
+
+              <div className="mb-5">
+                <label>Promotion Product's Features</label>
+                <div className="mt-3 grid gap-4">
+                  {promotion.features.map((feature, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <Input
+                        value={feature}
+                        onChange={(e) => {
+                          const newFeatures = [...promotion.features];
+                          newFeatures[index] = e.target.value;
+                          setPromotion((prev) => ({
+                            ...prev,
+                            features: newFeatures,
+                          }));
+                        }}
+                        placeholder="Enter feature"
+                      />
+                      <button
+                        type="button"
+                        className=""
+                        onClick={() => {
+                          const newFeatures = promotion.features.filter(
+                            (_, i) => i !== index
+                          );
+                          setPromotion((prev) => ({
+                            ...prev,
+                            features: newFeatures,
+                          }));
+                        }}
+                      >
+                        <Trash2 color="red" />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    className="bg-secondaryBg flex items-center justify-center mt-5 rounded-full h-[48px] font-medium"
+                    onClick={() =>
+                      setPromotion((prev) => ({
+                        ...prev,
+                        features: [...prev.features, ""],
+                      }))
+                    }
+                  >
+                    Add Feature
+                  </button>
+                </div>
+              </div>
 
               <div className="relative">
                 {uploading && (
@@ -215,7 +266,7 @@ const SettingsContainer = ({ data }: { data: Settings }) => {
         <button
           type="submit"
           disabled={loading}
-          className="bg-secondaryBg flex items-center justify-center mt-5 rounded-full h-[48px] font-medium"
+          className="bg-secondaryBg flex items-center justify-center mt-5 rounded-full h-[48px] font-medium w-full"
         >
           {loading ? (
             <span className="animate-spin">
