@@ -9,3 +9,7 @@
 body {
   @apply text-primary;
 }
+
+label {
+  @apply text-sm font-medium;
+}
