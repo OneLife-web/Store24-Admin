@@ -23,14 +23,14 @@ const SettingsContainer = ({ data }: { data: Settings }) => {
   }
 
   const [banner, setBanner] = useState({
-    title: data.banner?.title || "",
-    link: data.banner?.link || "",
+    title: data?.banner?.title || "",
+    link: data?.banner?.link || "",
   });
 
   const [promotion, setPromotion] = useState({
-    title: data.promotion?.title || "",
-    link: data.promotion?.link || "",
-    imageUrl: data.promotion?.imageUrl || "",
+    title: data?.promotion?.title || "",
+    link: data?.promotion?.link || "",
+    imageUrl: data?.promotion?.imageUrl || "",
   });
 
   //const [error, setError] = useState("");
