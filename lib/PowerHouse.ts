@@ -10,7 +10,7 @@ export const addSettings = async ({
 }: CreateRequestBody) => {
   try {
     //
-    const res = await fetch("http://localhost:3001/api/settings", {
+    const res = await fetch("https://store24-admin-sepia.vercel.app/api/settings", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -34,7 +34,7 @@ export const addSettings = async ({
 
 export const getSettings = async () => {
   try {
-    const res = await fetch("http://localhost:3001/api/settings", {
+    const res = await fetch("https://store24-admin-sepia.vercel.app/api/settings", {
       method: "GET",
       cache: "no-store", // Ensures the fetch result is not cached
     });
@@ -47,7 +47,7 @@ export const getSettings = async () => {
 
 export const updateSettings = async (payload: UpdateSettingsPayload) => {
   try {
-    const response = await fetch("http://localhost:3001/api/settings", {
+    const response = await fetch("https://store24-admin-sepia.vercel.app/api/settings", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
