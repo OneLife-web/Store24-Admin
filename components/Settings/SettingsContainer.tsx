@@ -144,7 +144,7 @@ const SettingsContainer = ({ data }: { data: Settings }) => {
               />
 
               <div className="mb-5">
-                <label>Promotion Product's Features</label>
+                <label>Promotion Product&lsquo;s Features</label>
                 <div className="mt-3 grid gap-4">
                   {promotion.features.map((feature, index) => (
                     <div key={index} className="flex items-center space-x-2">
