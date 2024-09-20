@@ -12,8 +12,8 @@ const Breadcrumb = ({ crumbs }: { crumbs: crumbsType[] }) => {
     <div>
       <Link
         href={crumbs[0].link}
-        className={cn("capitalize text-gray-500 font-medium", {
-          "text-primary": pathname === crumbs[0].link,
+        className={cn("capitalizeb text-sm text-gray-500", {
+          "text-primary font-medium text-base": pathname === crumbs[0].link,
         })}
       >
         {crumbs[0]?.title}
@@ -21,8 +21,8 @@ const Breadcrumb = ({ crumbs }: { crumbs: crumbsType[] }) => {
       <span className="mx-3">/</span>
       <Link
         href={crumbs[1].link}
-        className={cn("capitalize text-gray-500 font-medium", {
-          "text-primary": pathname === crumbs[1].link,
+        className={cn("capitalizeb text-sm text-gray-500", {
+          "text-primary font-medium text-base": pathname === crumbs[1].link,
         })}
       >
         {crumbs[1]?.title}
