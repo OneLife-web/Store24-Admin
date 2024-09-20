@@ -12,37 +12,44 @@ import { app } from "@/utils/firebase";
 import { Loader2, Plus, Trash2, UploadCloudIcon, X } from "lucide-react";
 import Image from "next/image";
 import { toast } from "@/hooks/use-toast";
-import { createProduct } from "@/lib/PowerHouse";
+import { createProduct, updateProduct } from "@/lib/PowerHouse";
+import { updateData } from "@/types";
 
 const storage = getStorage(app);
 
-const ProductContainer = () => {
-  /* if (!data) {
-    <div>Loading...</div>;
-  } */
-
-  const [productName, setProductName] = useState("");
+const ProductContainer = ({
+  type,
+  data,
+}: {
+  type: string;
+  data: updateData;
+}) => {
+  const [productName, setProductName] = useState(data?.title || "");
   const [error, setError] = useState("");
   const [productPrice, setProductPrice] = useState<number | undefined>(
-    undefined
+    data?.price || undefined
   );
-  const [productImages, setProductImages] = useState<string[]>([]);
-  const [features, setFeatures] = useState<string[]>([""]);
+  const [productImages, setProductImages] = useState<string[]>(
+    data?.images || []
+  );
+  const [features, setFeatures] = useState<string[]>(data?.features || [""]);
 
-  const [whyYouNeedThis, setWhyYouNeedThis] = useState([
-    { title: "", content: "" },
-  ]);
-  const [characteristics, setCharacteristics] = useState([
-    { title: "", content: "" },
-  ]);
-  const [faqs, setFaqs] = useState([{ question: "", answer: "" }]);
+  const [whyYouNeedThis, setWhyYouNeedThis] = useState(
+    data?.whyNeedThis || [{ title: "", content: "" }]
+  );
+  const [characteristics, setCharacteristics] = useState(
+    data?.characteristics || [{ title: "", content: "" }]
+  );
+  const [faqs, setFaqs] = useState(
+    data?.faqs || [{ question: "", answer: "" }]
+  );
 
   //const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
 
-   // Create a ref for the file input
-   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Create a ref for the file input
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Handle file change and upload
   const handleFileChange = async (
@@ -87,18 +94,60 @@ const ProductContainer = () => {
   //handle submit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    if (
-      !productImages ||
-      !productName ||
-      !productPrice ||
-      !features ||
-      !whyYouNeedThis ||
-      !characteristics ||
-      !faqs
-    ) {
-      setError("All fields are required");
+    if (type === "create") {
+      setLoading(true);
+      if (
+        !productImages ||
+        !productName ||
+        !productPrice ||
+        !features ||
+        !whyYouNeedThis ||
+        !characteristics ||
+        !faqs
+      ) {
+        setError("All fields are required");
+      } else {
+        try {
+          const payload = {
+            images: productImages,
+            title: productName,
+            price: productPrice,
+            features,
+            whyNeedThis: whyYouNeedThis,
+            characteristics,
+            faqs,
+          };
+          const res = await createProduct(payload);
+          if (res.status === 200) {
+            toast({
+              title: "Product created",
+            });
+            setLoading(false);
+            setError("");
+            setProductImages([]);
+            setFeatures([""]);
+            setCharacteristics([{ title: "", content: "" }]);
+            setWhyYouNeedThis([{ title: "", content: "" }]);
+            setFaqs([{ question: "", answer: "" }]);
+            setProductPrice(undefined);
+            setProductName("");
+          }
+
+          // Reset the file input value
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
+        } catch (error) {
+          console.log(error);
+          setLoading(false);
+          setError("");
+          toast({
+            title: "Sorry an error occured",
+          });
+        }
+      }
     } else {
+      setLoading(true);
       try {
         const payload = {
           images: productImages,
@@ -109,28 +158,22 @@ const ProductContainer = () => {
           characteristics,
           faqs,
         };
-        console.log(payload);
-        const res = await createProduct(payload);
+
+        if (!data._id) {
+          toast({
+            title: "Product ID is missing",
+          });
+          throw new Error("Product ID is missing");
+        }
+
+        const res = await updateProduct(data._id, payload);
         if (res.status === 200) {
           toast({
-            title: "Product created",
+            title: "Product updated",
           });
           setLoading(false);
           setError("");
-          setProductImages([]);
-          setFeatures([""]);
-          setCharacteristics([{ title: "", content: "" }]);
-          setWhyYouNeedThis([{ title: "", content: "" }]);
-          setFaqs([{ question: "", answer: "" }]);
-          setProductPrice(undefined);
-          setProductName("");
         }
-
-        // Reset the file input value
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-
       } catch (error) {
         console.log(error);
         setLoading(false);
@@ -445,7 +488,7 @@ const ProductContainer = () => {
               <Loader2 />
             </span>
           ) : (
-            <span>Update</span>
+            <span>{type === "create" ? "Create" : "Update"}</span>
           )}
         </button>
       </form>

@@ -8,11 +8,12 @@ import React from "react";
 
 const Breadcrumb = ({ crumbs }: { crumbs: crumbsType[] }) => {
   const pathname = usePathname();
+  console.log(pathname);
   return (
     <div>
       <Link
         href={crumbs[0].link}
-        className={cn("capitalizeb text-sm text-gray-500", {
+        className={cn("capitalize text-sm text-gray-500", {
           "text-primary font-medium text-base": pathname === crumbs[0].link,
         })}
       >
@@ -21,7 +22,7 @@ const Breadcrumb = ({ crumbs }: { crumbs: crumbsType[] }) => {
       <span className="mx-3">/</span>
       <Link
         href={crumbs[1].link}
-        className={cn("capitalizeb text-sm text-gray-500", {
+        className={cn("capitalize text-sm text-gray-500", {
           "text-primary font-medium text-base": pathname === crumbs[1].link,
         })}
       >

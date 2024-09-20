@@ -97,10 +97,11 @@ export const fetchProducts = async () => {
   }
 };
 
-export const fetchProduct = async (id: string) => {
+export const fetchProduct = async (id?: string) => {
   try {
     const res = await fetch(`https://store24-admin-sepia.vercel.app/api/product/${id}`, {
       method: "GET",
+      cache: "no-store",
     });
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
@@ -147,7 +148,7 @@ export const updateProduct = async (id: string, updateData: updateData) => {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
     const data = await res.json();
-    return data.product;
+    return data;
   } catch (error) {
     console.error("Error updating prduct:", error);
     throw error;

@@ -73,7 +73,7 @@ export interface productData {
 }
 
 export interface updateData {
-  _id: string;
+  _id?: string;
   images: string[];
   title: string;
   price: number | undefined;
