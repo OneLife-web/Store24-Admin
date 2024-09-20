@@ -6,11 +6,7 @@ import React from "react";
 
 const SettingsPage = async () => {
   const data: Settings | null = (await getSettings()) || null;
-
-  if (!data) {
-    console.error("Settings data not available");
-    return <p>Error loading settings data.</p>;
-  }
+  
   return (
     <>
       {data ? (
