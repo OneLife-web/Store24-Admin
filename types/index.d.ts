@@ -52,3 +52,12 @@ export interface UpdateRequestBody {
   promotionImageUrl: string;
   promotionFeatures: string[];
 }
+
+export interface productData {}
+
+export interface updateData {}
+
+export interface crumbsType {
+  title: string;
+  link: string;
+}

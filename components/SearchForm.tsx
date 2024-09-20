@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Input from "./Input";
 import { Plus, Search } from "lucide-react";
+import Link from "next/link";
 
 const SearchForm = () => {
   const [query, setQuery] = useState("");
@@ -14,9 +15,12 @@ const SearchForm = () => {
         icon={<Search strokeWidth={1.2} />}
         className="border pl-12"
       />
-      <button className="bg-secondaryBg flex items-center justify-center w-[70px] rounded-lg h-[48px]">
+      <Link
+        href="/products/create"
+        className="bg-secondaryBg flex items-center justify-center w-[70px] rounded-lg h-[48px]"
+      >
         <Plus />
-      </button>
+      </Link>
     </div>
   );
 };
