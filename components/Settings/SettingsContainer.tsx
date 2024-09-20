@@ -12,12 +12,19 @@ import { app } from "@/utils/firebase";
 import { Loader2, Trash2, UploadCloudIcon } from "lucide-react";
 import Image from "next/image";
 import { updateSettings } from "@/lib/PowerHouse";
-import { Settings } from "@/types";
+import { Settings, updateData } from "@/types";
 import { toast } from "@/hooks/use-toast";
+import { ComboboxDemo } from "../ComboBox";
 
 const storage = getStorage(app);
 
-const SettingsContainer = ({ data }: { data: Settings }) => {
+const SettingsContainer = ({
+  data,
+  products,
+}: {
+  data: Settings;
+  products: updateData[];
+}) => {
   if (!data) {
     <div>Loading...</div>;
   }
@@ -113,153 +120,21 @@ const SettingsContainer = ({ data }: { data: Settings }) => {
                 onChange={(e) =>
                   setBanner((prev) => ({ ...prev, title: e.target.value }))
                 }
-                placeholder="Enter Product Name"
+                placeholder="Enter Banner Name"
               />
               <Input
                 value={banner.link}
                 onChange={(e) =>
                   setBanner((prev) => ({ ...prev, link: e.target.value }))
                 }
-                placeholder="Enter Product Link"
+                placeholder="Enter Banner Link"
               />
             </div>
           </div>
-
           <div>
             <label>Promotion</label>
-            <div className="mt-3 grid gap-4">
-              <Input
-                value={promotion.title}
-                onChange={(e) =>
-                  setPromotion((prev) => ({ ...prev, title: e.target.value }))
-                }
-                placeholder="Enter Title"
-              />
-              <Input
-                value={promotion.link}
-                onChange={(e) =>
-                  setPromotion((prev) => ({ ...prev, link: e.target.value }))
-                }
-                placeholder="Enter Link"
-              />
-
-              <div className="mb-5">
-                <label>Promotion Product&lsquo;s Features</label>
-                <div className="mt-3 grid gap-4">
-                  {promotion.features.map((feature, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <Input
-                        value={feature}
-                        onChange={(e) => {
-                          const newFeatures = [...promotion.features];
-                          newFeatures[index] = e.target.value;
-                          setPromotion((prev) => ({
-                            ...prev,
-                            features: newFeatures,
-                          }));
-                        }}
-                        placeholder="Enter feature"
-                      />
-                      <button
-                        type="button"
-                        className=""
-                        onClick={() => {
-                          const newFeatures = promotion.features.filter(
-                            (_, i) => i !== index
-                          );
-                          setPromotion((prev) => ({
-                            ...prev,
-                            features: newFeatures,
-                          }));
-                        }}
-                      >
-                        <Trash2 color="red" />
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    className="bg-secondaryBg flex items-center justify-center mt-5 rounded-full h-[48px] font-medium"
-                    onClick={() =>
-                      setPromotion((prev) => ({
-                        ...prev,
-                        features: [...prev.features, ""],
-                      }))
-                    }
-                  >
-                    Add Feature
-                  </button>
-                </div>
-              </div>
-
-              <div className="relative">
-                {uploading && (
-                  <div className="absolute z-50 left-[50%] translate-x-[-50%] top-[50%] translate-y-[-50%] flex items-center justify-center">
-                    <svg
-                      version="1.1"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 50 50"
-                      width="50px"
-                      height="50px"
-                    >
-                      <path
-                        fill="none"
-                        stroke="#F8AF24"
-                        strokeWidth="4"
-                        strokeMiterlimit="10"
-                        d="M25,5 A20,20 0 1,1 24.999,5"
-                        strokeDasharray="31.4 31.4"
-                        strokeLinecap="round"
-                        transform="rotate(225 25 25)"
-                      >
-                        <animateTransform
-                          attributeName="transform"
-                          type="rotate"
-                          from="0 25 25"
-                          to="360 25 25"
-                          dur="1s"
-                          repeatCount="indefinite"
-                        />
-                      </path>
-                    </svg>
-                  </div>
-                )}
-
-                {promotion.imageUrl ? (
-                  <div className="relative">
-                    <Image
-                      src={promotion.imageUrl}
-                      width={400}
-                      height={200}
-                      alt="Uploaded promotion"
-                      className="rounded-[10px] w-full min-h-[150px] max-h-[200px]"
-                    />
-                  </div>
-                ) : (
-                  <div className="bg-white min-h-[150px] relative rounded-[10px]"></div>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    const fileInput = document.getElementById(
-                      "file-upload"
-                    ) as HTMLInputElement | null;
-                    if (fileInput) {
-                      fileInput.click();
-                    }
-                  }}
-                  className="absolute right-5 top-5 flex items-center justify-center w-[56px] h-[56px] rounded-full bg-secondaryBg"
-                >
-                  <input
-                    type="file"
-                    id="file-upload"
-                    className="hidden"
-                    onChange={handleFileChange}
-                  />
-                  <UploadCloudIcon />
-                </button>
-              </div>
+            <div className="mt-3">
+              <ComboboxDemo />
             </div>
           </div>
         </div>
