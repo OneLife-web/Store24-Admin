@@ -89,26 +89,28 @@ export const updateSettings = async (payload: UpdateSettingsPayload) => {
 
 export const fetchProducts = async () => {
   try {
-    const res = await fetch("/api/products", {
+    const res = await fetch("http://localhost:3000/api/products", {
       method: "GET",
       cache: "no-store",
     });
 
-    if (!res.ok) {
+    /* if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
-    }
+    } */
 
     const data = await res.json();
-    return data.products;
+    return data?.products;
   } catch (error) {
     console.error("Error fetching prducts:", error);
-    throw error;
+    //throw error;
   }
 };
 
 export const fetchProduct = async (id: string) => {
   try {
-    const res = await fetch(`/api/products/${id}`, { method: "GET" });
+    const res = await fetch(`http://localhost:3000/api/products/${id}`, {
+      method: "GET",
+    });
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
@@ -122,7 +124,7 @@ export const fetchProduct = async (id: string) => {
 
 export const createProduct = async (productData: productData) => {
   try {
-    const res = await fetch("/api/products", {
+    const res = await fetch("http://localhost:3000/api/products", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -143,7 +145,7 @@ export const createProduct = async (productData: productData) => {
 
 export const updateProduct = async (id: string, updateData: updateData) => {
   try {
-    const res = await fetch(`/api/products/${id}`, {
+    const res = await fetch(`http://localhost:3000/api/products/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -163,7 +165,9 @@ export const updateProduct = async (id: string, updateData: updateData) => {
 
 export const deleteProduct = async (id: string) => {
   try {
-    const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+    const res = await fetch(`http://localhost:3000/api/products/${id}`, {
+      method: "DELETE",
+    });
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }

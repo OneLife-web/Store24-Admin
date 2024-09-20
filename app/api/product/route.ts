@@ -24,6 +24,11 @@ export async function GET() {
   try {
     await connectToDb();
     const products = await Product.find({});
+
+    if (!products) {
+      return NextResponse.json({ error: "No product found" }, { status: 404 });
+    }
+
     return NextResponse.json({ products }, { status: 200 });
   } catch (error) {
     console.error("Error fetching products:", error);
