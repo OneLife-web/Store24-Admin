@@ -155,7 +155,7 @@ export const updateProduct = async (id: string, updateData: updateData) => {
   }
 };
 
-export const deleteProduct = async (id: string) => {
+export const deleteProduct = async (id?: string) => {
   try {
     const res = await fetch(`https://store24-admin-sepia.vercel.app/api/product/${id}`, {
       method: "DELETE",

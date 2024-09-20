@@ -14,7 +14,7 @@ const ProductCard = ({ item }: { item: updateData }) => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      const res = await deleteProduct(item._id);
+      const res = await deleteProduct(item?._id);
       if (res.status === 200) {
         toast({
           title: "Product deleted",
