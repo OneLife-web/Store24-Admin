@@ -2,21 +2,11 @@
 
 import { useState } from "react";
 import Input from "../Input";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
-import { app } from "@/utils/firebase";
-import { Loader2, Trash2, UploadCloudIcon } from "lucide-react";
-import Image from "next/image";
-import { updateSettings } from "@/lib/PowerHouse";
+import { Loader2 } from "lucide-react";
+import { addSettings, updateSettings } from "@/lib/PowerHouse";
 import { Settings, updateData } from "@/types";
 import { toast } from "@/hooks/use-toast";
 import { ComboboxDemo } from "../ComboBox";
-
-const storage = getStorage(app);
 
 const SettingsContainer = ({
   data,
@@ -34,49 +24,9 @@ const SettingsContainer = ({
     link: data?.banner?.link || "",
   });
 
-  const [promotion, setPromotion] = useState({
-    title: data?.promotion?.title || "",
-    link: data?.promotion?.link || "",
-    imageUrl: data?.promotion?.imageUrl || "",
-    features: data?.promotion?.features || [], // Add features here
-  });
+  const [productId, setProductId] = useState("");
 
-  //const [error, setError] = useState("");
-  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  // Handle file change and upload
-  const handleFileChange = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const target = event.target as HTMLInputElement;
-    if (!target.files || target.files.length === 0) return;
-
-    const file = target.files[0];
-    setUploading(true);
-
-    try {
-      const fileRef = ref(storage, `images/${file.name}`);
-      const uploadTask = uploadBytesResumable(fileRef, file);
-
-      uploadTask.on(
-        "state_changed",
-        null,
-        (error) => {
-          console.error("Upload error:", error);
-          setUploading(false);
-        },
-        async () => {
-          const downloadURL = await getDownloadURL(fileRef);
-          setPromotion((prev) => ({ ...prev, imageUrl: downloadURL }));
-          setUploading(false);
-        }
-      );
-    } catch (error) {
-      console.error("File upload failed:", error);
-      setUploading(false);
-    }
-  };
 
   //handle submit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -86,10 +36,7 @@ const SettingsContainer = ({
       const payload = {
         bannerTitle: banner.title,
         bannerLink: banner.link,
-        promotionTitle: promotion.title,
-        promotionLink: promotion.link,
-        promotionImageUrl: promotion.imageUrl,
-        promotionFeatures: promotion.features,
+        productId: productId,
       };
       const res = await updateSettings(payload);
       if (res.status === 200) {
@@ -134,7 +81,11 @@ const SettingsContainer = ({
           <div>
             <label>Promotion</label>
             <div className="mt-3">
-              <ComboboxDemo />
+              <ComboboxDemo
+                products={products}
+                setId={setProductId}
+                id={data?.promotion?.productId?._id}
+              />
             </div>
           </div>
         </div>

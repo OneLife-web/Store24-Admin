@@ -18,71 +18,70 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { updateData } from "@/types";
 
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-];
-
-export function ComboboxDemo() {
+export function ComboboxDemo({
+  products,
+  setId,
+  id,
+}: {
+  products: updateData[];
+  setId: (id: string) => void;
+  id?: string;
+}) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("");
 
+  // Set value based on the productId prop
+  React.useEffect(() => {
+    if (id) {
+      const product = products.find((p) => p._id === id);
+      if (product) {
+        setValue(product.title);
+      } else {
+        setValue(""); // Reset if product not found
+      }
+    }
+  }, [id, products]);
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild className="w-full">
+      <PopoverTrigger asChild>
         <Button
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between bg-white h-[48px] rounded-lg"
+          className="w-full h-[48px] rounded-lg justify-between"
         >
           {value
-            ? frameworks.find((framework) => framework.value === value)?.label
-            : "Select framework..."}
+            ? products.find((framework) => framework?.title === value)?.title
+            : "Select product..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[300px] bg-white p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." />
+          <CommandInput placeholder="Search product..." />
           <CommandList>
             <CommandEmpty>No framework found.</CommandEmpty>
             <CommandGroup>
-              {frameworks.map((framework) => (
+              {products.map((framework) => (
                 <CommandItem
-                  key={framework.value}
-                  value={framework.value}
+                  key={framework?._id}
+                  value={framework?.title}
                   onSelect={(currentValue) => {
                     setValue(currentValue === value ? "" : currentValue);
+                    setId(framework._id!);
                     setOpen(false);
                   }}
                 >
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      value === framework.value ? "opacity-100" : "opacity-0"
+                      value === framework?.title ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {framework.label}
+                  {framework?.title}
                 </CommandItem>
               ))}
             </CommandGroup>

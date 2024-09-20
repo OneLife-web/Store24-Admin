@@ -13,10 +13,7 @@ export interface IBannerInput {
 }
 
 export interface IPromotionInput {
-  title: string;
-  link: string;
-  imageUrl: string;
-  features: string[];
+  productId: productData;
 }
 
 export interface Settings {
@@ -27,33 +24,24 @@ export interface Settings {
 export interface CreateRequestBody {
   bannerTitle: string;
   bannerLink: string;
-  promotionTitle: string;
-  promotionLink: string;
-  promotionImageUrl: string;
-  promotionFeatures: string[];
+  productId: string;
 }
 
 interface UpdateSettingsPayload {
   bannerTitle: string;
   bannerLink: string;
-  promotionTitle: string;
-  promotionLink: string;
-  promotionImageUrl: string;
-  promotionFeatures: string[];
+  productId: string;
 }
 
 export interface UpdateRequestBody {
   bannerId: string;
   bannerTitle: string;
   bannerLink: string;
-  promotionId: string;
-  promotionTitle: string;
-  promotionLink: string;
-  promotionImageUrl: string;
-  promotionFeatures: string[];
+  productId: string;
 }
 
 export interface productData {
+  _id?: string;
   images: string[];
   title: string;
   price: number | undefined;

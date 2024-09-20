@@ -16,10 +16,7 @@ export async function POST(request: NextRequest) {
         link: body.bannerLink,
       },
       promotion: {
-        title: body.promotionTitle,
-        link: body.promotionLink,
-        imageUrl: body.promotionImageUrl,
-        features: body.promotionFeatures,
+        productId: body.productId, // Use productId directly
       },
     });
 
@@ -46,14 +43,14 @@ export async function GET() {
     await connectToDb();
 
     // Fetch the settings document (assuming only one document exists)
-    const settings = await Settings.findOne();
+    const settings = await Settings.findOne().populate({
+      path: "promotion.productId", // The path to populate
+      select: "title price", // Specify fields to select from the Product model
+    });
 
     // If no settings document exists, return a 404 response
     if (!settings) {
-      return NextResponse.json(
-        { error: "No settings found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "No settings found" }, { status: 404 });
     }
 
     // Return the banner and promotion details with a 200 status
@@ -68,10 +65,7 @@ export async function GET() {
       console.error("Error fetching settings data:", error.message);
 
       // Return a 500 error response with the error message
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     // Handle cases where the error is not an instance of Error
@@ -96,10 +90,7 @@ export async function PUT(request: NextRequest) {
         $set: {
           "banner.title": body.bannerTitle,
           "banner.link": body.bannerLink,
-          "promotion.title": body.promotionTitle,
-          "promotion.link": body.promotionLink,
-          "promotion.imageUrl": body.promotionImageUrl,
-          "promotion.features": body.promotionFeatures,
+          "promotion.productId": body.productId, // Update productId directly
         },
       },
       { new: true } // Return the updated document

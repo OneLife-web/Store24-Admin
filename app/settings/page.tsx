@@ -6,6 +6,7 @@ import React from "react";
 
 const SettingsPage = async () => {
   const data: Settings | null = (await getSettings()) || null;
+  console.log(data)
   const products: updateData[] = await fetchProducts();
 
   return (

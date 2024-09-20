@@ -1,22 +1,20 @@
 import { Schema, model, models, Document } from "mongoose";
 
-// Define the interface for banner and promotion
+// Define the interface for banner
 export interface IBanner extends Document {
   title: string;
   link: string;
-}
-
-export interface IPromotion extends Document {
-  title: string;
-  link: string;
-  imageUrl: string;
-  features: string[];
 }
 
 // Define the interface for the Settings document
 export interface ISettings extends Document {
   banner: IBanner;
   promotion: IPromotion;
+}
+
+// Define the interface for promotion
+export interface IPromotion extends Document {
+  productId: Schema.Types.ObjectId; // Reference to the Product
 }
 
 // Define the schemas for banner and promotion
@@ -26,13 +24,7 @@ const BannerSchema = new Schema<IBanner>({
 });
 
 const PromotionSchema = new Schema<IPromotion>({
-  title: { type: String, required: true },
-  link: { type: String, required: true },
-  imageUrl: { type: String, required: true },
-  features: {
-    type: [String], // Array of strings
-    required: true,
-  },
+  productId: { type: Schema.Types.ObjectId, ref: "Product", required: true }, // Reference to the Product model
 });
 
 // Define the Settings schema that includes banner and promotion
@@ -48,5 +40,4 @@ const SettingsSchema = new Schema<ISettings>({
 });
 
 // Create the model
-export const Settings =
-  models.Settings || model<ISettings>("Settings", SettingsSchema);
+export const Settings = models.Settings || model<ISettings>("Settings", SettingsSchema);
