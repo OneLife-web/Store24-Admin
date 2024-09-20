@@ -12,6 +12,7 @@ import { app } from "@/utils/firebase";
 import { Loader2, Plus, Trash2, UploadCloudIcon, X } from "lucide-react";
 import Image from "next/image";
 import { toast } from "@/hooks/use-toast";
+import { createProduct } from "@/lib/PowerHouse";
 
 const storage = getStorage(app);
 
@@ -21,11 +22,12 @@ const ProductContainer = () => {
   } */
 
   const [productName, setProductName] = useState("");
+  const [error, setError] = useState("");
   const [productPrice, setProductPrice] = useState<number | undefined>(
     undefined
   );
   const [productImages, setProductImages] = useState<string[]>([]);
-  const [features, setFeatures] = useState<string[]>([]);
+  const [features, setFeatures] = useState<string[]>([""]);
 
   const [whyYouNeedThis, setWhyYouNeedThis] = useState([
     { title: "", content: "" },
@@ -82,44 +84,59 @@ const ProductContainer = () => {
   //handle submit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    //setLoading(true);
-    try {
-      const payload = {
-        productImages,
-        productName,
-        productPrice,
-        features,
-        characteristics,
-        whyYouNeedThis,
-        faqs,
-        /*  bannerTitle: banner.title,
-        bannerLink: banner.link,
-        promotionTitle: promotion.title,
-        promotionLink: promotion.link,
-        promotionImageUrl: promotion.imageUrl,
-        promotionFeatures: promotion.features, */
-      };
-      console.log(payload);
-      /* const res = await updateSettings(payload);
-      if (res.status === 200) {
-        toast({
-          title: "Settings updated",
-        });
+    setLoading(true);
+    if (
+      !productImages ||
+      !productName ||
+      !productPrice ||
+      !features ||
+      !whyYouNeedThis ||
+      !characteristics ||
+      !faqs
+    ) {
+      setError("All fields are required");
+    } else {
+      try {
+        const payload = {
+          images: productImages,
+          title: productName,
+          price: productPrice,
+          features,
+          whyNeedThis: whyYouNeedThis,
+          characteristics,
+          faqs,
+        };
+        console.log(payload);
+        const res = await createProduct(payload);
+        if (res.status === 200) {
+          toast({
+            title: "Product created",
+          });
+          setLoading(false);
+          setError("");
+          setProductImages([]);
+          setFeatures([]);
+          setCharacteristics([]);
+          setWhyYouNeedThis([]);
+          setFaqs([]);
+          setProductPrice(undefined);
+          setProductName("");
+        }
+      } catch (error) {
+        console.log(error);
         setLoading(false);
-        // setError("");
-      } */
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-      toast({
-        title: "Sorry an error occured",
-      });
+        setError("");
+        toast({
+          title: "Sorry an error occured",
+        });
+      }
     }
   };
   return (
     <section>
       <form onSubmit={handleSubmit}>
         <div className="bg-gray-50 grid gap-6 py-5 mt-5 pb-10 p-[3%] rounded-xl w-full">
+          {error && <p className="text-red-500 text-xs text-center">{error}</p>}
           <div>
             <label>Product Basic Info</label>
             <div className="mt-3 grid gap-4">

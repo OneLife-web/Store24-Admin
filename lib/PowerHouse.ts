@@ -124,7 +124,7 @@ export const fetchProduct = async (id: string) => {
 
 export const createProduct = async (productData: productData) => {
   try {
-    const res = await fetch("http://localhost:3000/api/products", {
+    const res = await fetch("http://localhost:3000/api/product", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -136,7 +136,7 @@ export const createProduct = async (productData: productData) => {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
     const data = await res.json();
-    return data.product;
+    return data;
   } catch (error) {
     console.error("Error creating prduct:", error);
     throw error;

@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     await connectToDb();
     const newProduct = new Product(data);
     const savedProduct = await newProduct.save();
-    return NextResponse.json({ product: savedProduct }, { status: 201 });
+    return NextResponse.json({ product: savedProduct, status: 200 });
   } catch (error) {
     console.error("Error creating product:", error);
     return NextResponse.json(

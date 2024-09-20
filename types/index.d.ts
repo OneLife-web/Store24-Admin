@@ -53,7 +53,24 @@ export interface UpdateRequestBody {
   promotionFeatures: string[];
 }
 
-export interface productData {}
+export interface productData {
+  images: string[];
+  title: string;
+  price: number | undefined;
+  features: string[];
+  whyNeedThis: {
+    title: string;
+    content: string;
+  }[];
+  characteristics: {
+    title: string;
+    content: string;
+  }[];
+  faqs: {
+    question: string;
+    answer: string;
+  }[];
+}
 
 export interface updateData {}
 
