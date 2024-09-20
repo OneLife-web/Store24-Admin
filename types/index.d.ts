@@ -4,6 +4,7 @@ export interface InputProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   className?: string;
   placeholder?: string;
+  icon?: React.ReactNode;
 }
 
 export interface IBannerInput {
