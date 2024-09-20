@@ -10,20 +10,23 @@ export const addSettings = async ({
 }: CreateRequestBody) => {
   try {
     //
-    const res = await fetch("https://store24-admin-sepia.vercel.app/api/settings", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        bannerTitle,
-        bannerLink,
-        promotionTitle,
-        promotionLink,
-        promotionImageUrl,
-        promotionFeatures,
-      }),
-    });
+    const res = await fetch(
+      "https://store24-admin-sepia.vercel.app/api/settings",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          bannerTitle,
+          bannerLink,
+          promotionTitle,
+          promotionLink,
+          promotionImageUrl,
+          promotionFeatures,
+        }),
+      }
+    );
 
     const result = await res.json();
     return result;
@@ -36,24 +39,33 @@ export const getSettings = async () => {
   try {
     const res = await fetch("https://store24-admin-sepia.vercel.app/api/settings", {
       method: "GET",
-      cache: "no-store", // Ensures the fetch result is not cached
+      cache: "no-store",
     });
-    const result = await res.json();
+
+    if (!res.ok) {
+      throw new Error(`API error: ${res.status} - ${await res.text()}`);
+    }
+
+    const result = await res.json(); // Read body only once
     return result;
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching settings:", error);
+    throw error;
   }
 };
 
 export const updateSettings = async (payload: UpdateSettingsPayload) => {
   try {
-    const response = await fetch("https://store24-admin-sepia.vercel.app/api/settings", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    const response = await fetch(
+      "https://store24-admin-sepia.vercel.app/api/settings",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

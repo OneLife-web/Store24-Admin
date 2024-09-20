@@ -42,21 +42,43 @@ export async function POST(request: NextRequest) {
 // GET request for fetching banner and promotion details
 export async function GET() {
   try {
+    // Ensure the database connection is established
     await connectToDb();
 
-    const settings = await Settings.findOne(); // Fetch the single settings document
+    // Fetch the settings document (assuming only one document exists)
+    const settings = await Settings.findOne();
 
+    // If no settings document exists, return a 404 response
     if (!settings) {
-      return NextResponse.json({ error: "No settings found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "No settings found" },
+        { status: 404 }
+      );
     }
 
+    // Return the banner and promotion details with a 200 status
     return NextResponse.json(
       { banner: settings.banner, promotion: settings.promotion },
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error fetching settings data:", error);
-    return NextResponse.json({ error: "Error fetching data" }, { status: 500 });
+    // Type guard to check if 'error' has a 'message' property
+    if (error instanceof Error) {
+      // Log the specific error message for debugging purposes
+      console.error("Error fetching settings data:", error.message);
+
+      // Return a 500 error response with the error message
+      return NextResponse.json(
+        { error: error.message },
+        { status: 500 }
+      );
+    }
+
+    // Handle cases where the error is not an instance of Error
+    return NextResponse.json(
+      { error: "An unknown error occurred" },
+      { status: 500 }
+    );
   }
 }
 
