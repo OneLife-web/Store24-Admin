@@ -11,7 +11,7 @@ const Input = ({
   icon,
 }: InputProps) => {
   return (
-    <div className="relative">
+    <div className="relative w-full">
       {icon && (
         <span className="absolute top-[50%] left-3 translate-y-[-50%]">{icon}</span>
       )}
