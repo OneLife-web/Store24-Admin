@@ -141,7 +141,7 @@ export const createProduct = async (productData: productData) => {
   }
 };
 
-export const updateProduct = async (id: String, updateData: updateData) => {
+export const updateProduct = async (id: string, updateData: updateData) => {
   try {
     const res = await fetch(`/api/products/${id}`, {
       method: "PUT",
@@ -161,7 +161,7 @@ export const updateProduct = async (id: String, updateData: updateData) => {
   }
 };
 
-export const deleteProduct = async (id: String) => {
+export const deleteProduct = async (id: string) => {
   try {
     const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
     if (!res.ok) {
