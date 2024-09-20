@@ -115,10 +115,10 @@ const ProductContainer = () => {
           setLoading(false);
           setError("");
           setProductImages([]);
-          setFeatures([]);
-          setCharacteristics([]);
-          setWhyYouNeedThis([]);
-          setFaqs([]);
+          setFeatures([""]);
+          setCharacteristics([{ title: "", content: "" }]);
+          setWhyYouNeedThis([{ title: "", content: "" }]);
+          setFaqs([{ question: "", answer: "" }]);
           setProductPrice(undefined);
           setProductName("");
         }
