@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Input from "../Input";
 import { Loader2 } from "lucide-react";
-import { addSettings, updateSettings } from "@/lib/PowerHouse";
+import { updateSettings } from "@/lib/PowerHouse";
 import { Settings, updateData } from "@/types";
 import { toast } from "@/hooks/use-toast";
 import { ComboboxDemo } from "../ComboBox";
