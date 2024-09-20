@@ -9,7 +9,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { app } from "@/utils/firebase";
-import { Loader2, Plus, Trash2, UploadCloudIcon } from "lucide-react";
+import { Loader2, Plus, Trash2, UploadCloudIcon, X } from "lucide-react";
 import Image from "next/image";
 import { toast } from "@/hooks/use-toast";
 
@@ -26,6 +26,7 @@ const ProductContainer = () => {
   );
   const [productImages, setProductImages] = useState<string[]>([]);
   const [features, setFeatures] = useState<string[]>([]);
+
   const [whyYouNeedThis, setWhyYouNeedThis] = useState([
     { title: "", content: "" },
   ]);
@@ -81,9 +82,16 @@ const ProductContainer = () => {
   //handle submit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
+    //setLoading(true);
     try {
       const payload = {
+        productImages,
+        productName,
+        productPrice,
+        features,
+        characteristics,
+        whyYouNeedThis,
+        faqs,
         /*  bannerTitle: banner.title,
         bannerLink: banner.link,
         promotionTitle: promotion.title,
@@ -91,6 +99,7 @@ const ProductContainer = () => {
         promotionImageUrl: promotion.imageUrl,
         promotionFeatures: promotion.features, */
       };
+      console.log(payload);
       /* const res = await updateSettings(payload);
       if (res.status === 200) {
         toast({
@@ -377,10 +386,10 @@ const ProductContainer = () => {
                   >
                     <Image
                       src={url}
-                      width={400}
-                      height={200}
+                      width={100}
+                      height={100}
                       alt={`Uploaded image ${index + 1}`}
-                      className="w-full h-[150px] object-cover"
+                      className="w-full h-[100px] object-cover"
                     />
                     <button
                       type="button"
@@ -389,9 +398,9 @@ const ProductContainer = () => {
                           prev.filter((_, i) => i !== index)
                         )
                       }
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
+                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
                     >
-                      &times; {/* Close button */}
+                      <X size={13} />
                     </button>
                   </div>
                 ))}
