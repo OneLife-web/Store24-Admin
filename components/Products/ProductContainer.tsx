@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Input from "../Input";
 import {
   getStorage,
@@ -40,6 +40,9 @@ const ProductContainer = () => {
   //const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
+
+   // Create a ref for the file input
+   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Handle file change and upload
   const handleFileChange = async (
@@ -122,6 +125,12 @@ const ProductContainer = () => {
           setProductPrice(undefined);
           setProductName("");
         }
+
+        // Reset the file input value
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+
       } catch (error) {
         console.log(error);
         setLoading(false);
@@ -301,15 +310,6 @@ const ProductContainer = () => {
               {faqs.map((item, index) => (
                 <div key={index} className="flex items-center space-x-2">
                   <Input
-                    value={item.question}
-                    onChange={(e) => {
-                      const newItems = [...faqs];
-                      newItems[index].question = e.target.value; // Update question
-                      setFaqs(newItems);
-                    }}
-                    placeholder="Enter question"
-                  />
-                  <Input
                     value={item.answer}
                     onChange={(e) => {
                       const newItems = [...faqs];
@@ -317,6 +317,15 @@ const ProductContainer = () => {
                       setFaqs(newItems);
                     }}
                     placeholder="Enter answer"
+                  />
+                  <Input
+                    value={item.question}
+                    onChange={(e) => {
+                      const newItems = [...faqs];
+                      newItems[index].question = e.target.value; // Update question
+                      setFaqs(newItems);
+                    }}
+                    placeholder="Enter question"
                   />
                   <button
                     type="button"
@@ -352,6 +361,7 @@ const ProductContainer = () => {
                   <input
                     type="file"
                     id="file-upload"
+                    ref={fileInputRef} // Attach the ref here
                     className="hidden"
                     multiple // Allow multiple file uploads
                     onChange={handleFileChange}
