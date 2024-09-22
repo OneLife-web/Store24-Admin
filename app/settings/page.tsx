@@ -5,9 +5,15 @@ import { Loader2 } from "lucide-react";
 import React from "react";
 
 const SettingsPage = async () => {
-  const data: Settings | null = (await getSettings()) || null;
-  console.log(data)
-  const products: updateData[] = await fetchProducts();
+  const [settingsResult, productsResult] = await Promise.allSettled([
+    getSettings(),
+    fetchProducts(),
+  ]);
+
+  const data: Settings | null =
+    settingsResult.status === "fulfilled" ? settingsResult.value : null;
+  const products: updateData[] =
+    productsResult.status === "fulfilled" ? productsResult.value : [];
 
   return (
     <>

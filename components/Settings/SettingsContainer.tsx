@@ -24,7 +24,9 @@ const SettingsContainer = ({
     link: data?.banner?.link || "",
   });
 
-  const [productId, setProductId] = useState("");
+  const [productId, setProductId] = useState(
+    data?.promotion?.productId?._id || ""
+  );
 
   const [loading, setLoading] = useState(false);
 

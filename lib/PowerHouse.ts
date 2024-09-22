@@ -45,7 +45,7 @@ export const getSettings = async () => {
     );
 
     if (!res.ok) {
-      //throw new Error(`API error: ${res.status} - ${await res.text()}`);
+      throw new Error(`API error: ${res.status} - ${await res.text()}`);
     }
 
     const result = await res.json(); // Read body only once
@@ -59,7 +59,7 @@ export const getSettings = async () => {
 export const updateSettings = async (payload: UpdateSettingsPayload) => {
   try {
     const response = await fetch(
-      "https://store24-admin-sepia.vercel.app/api/settings",
+      "http://localhost:3000/api/settings",
       {
         method: "PUT",
         headers: {

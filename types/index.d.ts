@@ -34,7 +34,6 @@ interface UpdateSettingsPayload {
 }
 
 export interface UpdateRequestBody {
-  bannerId: string;
   bannerTitle: string;
   bannerLink: string;
   productId: string;
