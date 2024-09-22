@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
     const result = await generateOTP(phone);
     return NextResponse.json(result, { status: 200 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { success: false, message: "Error generating OTP" },
       { status: 500 }
