@@ -59,7 +59,7 @@ export const getSettings = async () => {
 export const updateSettings = async (payload: UpdateSettingsPayload) => {
   try {
     const response = await fetch(
-      "http://localhost:3000/api/settings",
+      "https://store24-admin-sepia.vercel.app/api/settings",
       {
         method: "PUT",
         headers: {
