@@ -1,19 +1,22 @@
 // models/Order.ts
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-interface IOrder extends Document {
-  userId: Schema.Types.ObjectId;
-  items: Schema.Types.ObjectId[];
-  total: number;
-}
+const OrderSchema = new Schema({
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  items: [
+    {
+      productId: { type: Schema.Types.ObjectId, ref: "Product" },
+      name: String,
+      price: Number,
+      quantity: Number,
+      image: String,
+    },
+  ],
+  total: { type: Number, required: true },
+  paymentStatus: { type: String, required: true },
+  stripeSessionId: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  orderStatus: { type: String, default: "processing" }, // e.g., processing, shipped, delivered, canceled
+});
 
-const OrderSchema: Schema = new Schema(
-  {
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
-    items: [{ type: Schema.Types.ObjectId, ref: "CartItem" }],
-    total: { type: Number, required: true },
-  },
-  { timestamps: true }
-);
-
-export const Order = mongoose.model<IOrder>("Order", OrderSchema);
+export default mongoose.models.Order || mongoose.model("Order", OrderSchema);

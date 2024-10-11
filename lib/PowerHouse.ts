@@ -11,7 +11,6 @@ export const addSettings = async ({
   productId,
 }: CreateRequestBody) => {
   try {
-    //https://store24-admin-sepia.vercel.app
     const res = await fetch(
       "https://store24-admin-sepia.vercel.app/api/settings",
       {
@@ -36,13 +35,10 @@ export const addSettings = async ({
 
 export const getSettings = async () => {
   try {
-    const res = await fetch(
-      "https://store24-admin-sepia.vercel.app/api/settings",
-      {
-        method: "GET",
-        cache: "no-store",
-      }
-    );
+    const res = await fetch("http://localhost:3001/api/settings", {
+      method: "GET",
+      cache: "no-store",
+    });
 
     if (!res.ok) {
       throw new Error(`API error: ${res.status} - ${await res.text()}`);
@@ -58,16 +54,13 @@ export const getSettings = async () => {
 
 export const updateSettings = async (payload: UpdateSettingsPayload) => {
   try {
-    const response = await fetch(
-      "https://store24-admin-sepia.vercel.app/api/settings",
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      }
-    );
+    const response = await fetch("http://localhost:3001/api/settings", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -83,13 +76,10 @@ export const updateSettings = async (payload: UpdateSettingsPayload) => {
 
 export const fetchProducts = async () => {
   try {
-    const res = await fetch(
-      "https://store24-admin-sepia.vercel.app/api/product",
-      {
-        method: "GET",
-        cache: "no-store",
-      }
-    );
+    const res = await fetch("http://localhost:3001/api/product", {
+      method: "GET",
+      cache: "no-store",
+    });
 
     /* if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
@@ -105,13 +95,10 @@ export const fetchProducts = async () => {
 
 export const fetchProduct = async (id?: string) => {
   try {
-    const res = await fetch(
-      `https://store24-admin-sepia.vercel.app/api/product/${id}`,
-      {
-        method: "GET",
-        cache: "no-store",
-      }
-    );
+    const res = await fetch(`http://localhost:3001/api/product/${id}`, {
+      method: "GET",
+      cache: "no-store",
+    });
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
@@ -125,16 +112,13 @@ export const fetchProduct = async (id?: string) => {
 
 export const createProduct = async (productData: productData) => {
   try {
-    const res = await fetch(
-      "https://store24-admin-sepia.vercel.app/api/product",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(productData),
-      }
-    );
+    const res = await fetch("http://localhost:3001/api/product", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(productData),
+    });
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
@@ -149,16 +133,13 @@ export const createProduct = async (productData: productData) => {
 
 export const updateProduct = async (id: string, updateData: updateData) => {
   try {
-    const res = await fetch(
-      `https://store24-admin-sepia.vercel.app/api/product/${id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updateData),
-      }
-    );
+    const res = await fetch(`http://localhost:3001/api/product/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updateData),
+    });
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }

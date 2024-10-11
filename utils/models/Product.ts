@@ -1,11 +1,26 @@
-import mongoose, { Schema, model, models } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const productSchema = new Schema(
   {
-    images: [String],
+    images: [
+      {
+        url: { type: String, required: true }, // Ensure URL is required
+        caption: { type: String, required: true }, // Ensure caption is required
+      },
+    ],
+    videos: [
+      {
+        url: { type: String }, // Ensure URL is required
+        caption: { type: String }, // Ensure caption is required
+      },
+    ], // Add this line
     title: { type: String, required: true },
+    quantitySold: { type: String },
+    description: { type: String },
     price: { type: Number, required: true },
+    discountPrice: { type: Number },
     features: [String],
+    colors: [String],
     whyNeedThis: [
       {
         title: { type: String, required: true },
@@ -28,4 +43,5 @@ const productSchema = new Schema(
   { timestamps: true }
 );
 
-export const Product = models.Product || model("Product", productSchema);
+export const Product =
+  mongoose.models.Product || mongoose.model("Product", productSchema);

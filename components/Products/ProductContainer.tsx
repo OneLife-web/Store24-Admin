@@ -25,14 +25,25 @@ const ProductContainer = ({
   data: updateData;
 }) => {
   const [productName, setProductName] = useState(data?.title || "");
+  const [productDescription, setProductDescription] = useState(
+    data?.description || ""
+  );
+  const [quantitySold, setQuantitySold] = useState(data?.quantitySold || "");
   const [error, setError] = useState("");
   const [productPrice, setProductPrice] = useState<number | undefined>(
     data?.price || undefined
   );
-  const [productImages, setProductImages] = useState<string[]>(
-    data?.images || []
+  const [discountPrice, setDiscountPrice] = useState<number | undefined>(
+    data?.discountPrice || undefined
   );
+  const [productImages, setProductImages] = useState<
+    { url: string; caption: string }[]
+  >(data?.images || []);
+  const [productVideos, setProductVideos] = useState<
+    { url: string; caption: string }[]
+  >([]);
   const [features, setFeatures] = useState<string[]>(data?.features || [""]);
+  const [colors, setColors] = useState<string[]>(data?.colors || [""]);
 
   const [whyYouNeedThis, setWhyYouNeedThis] = useState(
     data?.whyNeedThis || [{ title: "", content: "" }]
@@ -47,9 +58,11 @@ const ProductContainer = ({
   //const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [uploadingVideos, setUploadingVideos] = useState(false);
 
   // Create a ref for the file input
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   // Handle file change and upload
   const handleFileChange = async (
@@ -65,32 +78,77 @@ const ProductContainer = ({
       const fileRef = ref(storage, `images/${file.name}`);
       const uploadTask = uploadBytesResumable(fileRef, file);
 
-      return new Promise<string>((resolve, reject) => {
-        uploadTask.on(
-          "state_changed",
-          null,
-          (error) => {
-            console.error("Upload error:", error);
-            reject(error);
-            setUploading(false);
-          },
-          async () => {
-            const downloadURL = await getDownloadURL(fileRef);
-            resolve(downloadURL);
-          }
-        );
-      });
+      return new Promise<{ url: string; caption: string }>(
+        (resolve, reject) => {
+          uploadTask.on(
+            "state_changed",
+            null,
+            (error) => {
+              console.error("Upload error:", error);
+              reject(error);
+              setUploading(false);
+            },
+            async () => {
+              const downloadURL = await getDownloadURL(fileRef);
+              resolve({ url: downloadURL, caption: "" });
+            }
+          );
+        }
+      );
     });
 
     try {
-      const imageUrls = await Promise.all(uploadPromises);
-      setProductImages((prev) => [...prev, ...imageUrls]);
+      const uploadedImages = await Promise.all(uploadPromises);
+      setProductImages((prev) => [...prev, ...uploadedImages]);
     } catch (error) {
       console.error("File upload failed:", error);
     } finally {
       setUploading(false);
     }
   };
+
+  const handleVideoChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const target = event.target as HTMLInputElement;
+    if (!target.files || target.files.length === 0) return;
+
+    const files = Array.from(target.files);
+    setUploadingVideos(true);
+
+    const uploadPromises = files.map(async (file) => {
+      const fileRef = ref(storage, `videos/${file.name}`);
+      const uploadTask = uploadBytesResumable(fileRef, file);
+
+      return new Promise<{ url: string; caption: string }>(
+        (resolve, reject) => {
+          uploadTask.on(
+            "state_changed",
+            null,
+            (error) => {
+              console.error("Upload error:", error);
+              reject(error);
+              setUploadingVideos(false);
+            },
+            async () => {
+              const downloadURL = await getDownloadURL(fileRef);
+              resolve({ url: downloadURL, caption: "" });
+            }
+          );
+        }
+      );
+    });
+
+    try {
+      const uploadedVideos = await Promise.all(uploadPromises);
+      setProductVideos((prev) => [...prev, ...uploadedVideos]);
+    } catch (error) {
+      console.error("Error uploading videos:", error);
+    } finally {
+      setUploadingVideos(false);
+    }
+  };
+
   //handle submit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -110,9 +168,14 @@ const ProductContainer = ({
         try {
           const payload = {
             images: productImages,
+            videos: productVideos,
             title: productName,
+            quantitySold,
+            description: productDescription,
             price: productPrice,
+            discountPrice,
             features,
+            colors,
             whyNeedThis: whyYouNeedThis,
             characteristics,
             faqs,
@@ -151,9 +214,14 @@ const ProductContainer = ({
       try {
         const payload = {
           images: productImages,
+          videos: productVideos,
           title: productName,
+          quantitySold,
+          description: productDescription,
           price: productPrice,
+          discountPrice,
           features,
+          colors,
           whyNeedThis: whyYouNeedThis,
           characteristics,
           faqs,
@@ -197,6 +265,17 @@ const ProductContainer = ({
                 onChange={(e) => setProductName(e.target.value)}
                 placeholder="Enter Product Name"
               />
+              <textarea
+                value={productDescription}
+                onChange={(e) => setProductDescription(e.target.value)}
+                placeholder="Enter Product Description"
+                className="rounded-lg h-[120px] py-3 custom-scrollbar block w-full px-4 focus:outline-none text-sm placeholder:font-light"
+              ></textarea>
+              <Input
+                value={quantitySold}
+                onChange={(e) => setQuantitySold(e.target.value)}
+                placeholder="Enter Quantity Sold"
+              />
               <Input
                 value={
                   productPrice !== undefined ? productPrice.toString() : ""
@@ -206,8 +285,56 @@ const ProductContainer = ({
                   const parsedValue = parseFloat(value);
                   setProductPrice(isNaN(parsedValue) ? undefined : parsedValue);
                 }}
-                placeholder="Enter Product Price"
+                placeholder="Enter Product price"
               />
+              <Input
+                value={
+                  discountPrice !== undefined ? discountPrice.toString() : ""
+                }
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const parsedValue = parseFloat(value);
+                  setDiscountPrice(
+                    isNaN(parsedValue) ? undefined : parsedValue
+                  );
+                }}
+                placeholder="Enter the discounted price (if applicable)"
+              />
+            </div>
+          </div>
+          <div className="relative">
+            <label>Product&lsquo;s Colors</label>
+            <div className="mt-3 grid gap-4">
+              {colors.map((color, index) => (
+                <div key={index} className="flex items-center space-x-2">
+                  <Input
+                    value={color}
+                    onChange={(e) => {
+                      const newColors = [...colors];
+                      newColors[index] = e.target.value; // Update feature at the specific index
+                      setColors(newColors); // Update the whole array
+                    }}
+                    placeholder="Enter color"
+                  />
+                  <button
+                    type="button"
+                    className=""
+                    onClick={() => {
+                      const newColors = colors.filter((_, i) => i !== index); // Remove feature at the specific index
+                      setColors(newColors); // Update the whole array after deletion
+                    }}
+                  >
+                    <Trash2 color="red" size={16} />
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="bg-secondaryBg flex items-center justify-center absolute top-[-15px] right-0 w-[25px] mt-5 rounded-full h-[25px] font-medium"
+                onClick={() => setColors([...colors, ""])} // Add an empty string to the features array
+              >
+                <Plus size={13} />
+              </button>
             </div>
           </div>
           <div className="relative">
@@ -449,28 +576,135 @@ const ProductContainer = ({
 
               {/* Display uploaded images */}
               <div className="grid grid-cols-3 gap-4">
-                {productImages.map((url, index) => (
+                {productImages.map((image, index) => (
                   <div
                     key={index}
-                    className="relative border rounded-lg overflow-hidden"
+                    className="relative grid gap-2 rounded-lg overflow-hidden"
                   >
                     <Image
-                      src={url}
+                      src={image.url}
                       width={100}
                       height={100}
                       alt={`Uploaded image ${index + 1}`}
-                      className="w-full h-[100px] object-cover"
+                      className="w-full h-[100px] object-contain"
+                    />
+                    <Input
+                      value={image.caption || ""}
+                      onChange={(e) => {
+                        const updatedImages = [...productImages];
+                        updatedImages[index].caption = e.target.value;
+                        setProductImages(updatedImages);
+                      }}
+                      placeholder="Enter image caption"
+                      className="w-full p-2 bg-white"
                     />
                     <button
                       type="button"
-                      onClick={() =>
+                      onClick={() => {
                         setProductImages((prev) =>
                           prev.filter((_, i) => i !== index)
-                        )
-                      }
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
+                        );
+                      }}
+                      className="absolute right-2 top-2 p-1 bg-red-500 rounded-full"
                     >
-                      <X size={13} />
+                      <Trash2 size={12} className="text-white" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center justify-between w-full">
+              <label>Product Videos</label>
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() =>
+                    document.getElementById("video-upload")?.click()
+                  }
+                  className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-secondaryBg"
+                >
+                  <input
+                    type="file"
+                    id="video-upload"
+                    ref={videoInputRef} // Create a new ref for the video input
+                    className="hidden"
+                    multiple // Allow multiple file uploads
+                    onChange={handleVideoChange}
+                  />
+                  <UploadCloudIcon />
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-3 grid gap-4 relative pt-2">
+              {uploadingVideos && (
+                <div className="absolute z-50 left-[50%] translate-x-[-50%] top-[50%] translate-y-[-50%] flex items-center justify-center">
+                  <svg
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 50 50"
+                    width="50px"
+                    height="50px"
+                  >
+                    <path
+                      fill="none"
+                      stroke="#F8AF24"
+                      strokeWidth="4"
+                      strokeMiterlimit="10"
+                      d="M25,5 A20,20 0 1,1 24.999,5"
+                      strokeDasharray="31.4 31.4"
+                      strokeLinecap="round"
+                      transform="rotate(225 25 25)"
+                    >
+                      <animateTransform
+                        attributeName="transform"
+                        type="rotate"
+                        from="0 25 25"
+                        to="360 25 25"
+                        dur="1s"
+                        repeatCount="indefinite"
+                      />
+                    </path>
+                  </svg>
+                </div>
+              )}
+
+              {/* Display uploaded videos */}
+              <div className="grid grid-cols-3 gap-4">
+                {productVideos.map((video, index) => (
+                  <div
+                    key={index}
+                    className="relative grid gap-2 rounded-lg overflow-hidden"
+                  >
+                    <video
+                      src={video.url}
+                      width={100}
+                      height={100}
+                      poster={video.url} // or a fallback image URL
+                      className="w-full h-[100px] object-contain"
+                    />
+                    <Input
+                      value={video.caption || ""}
+                      onChange={(e) => {
+                        const updatedVideos = [...productVideos];
+                        updatedVideos[index].caption = e.target.value;
+                        setProductVideos(updatedVideos);
+                      }}
+                      placeholder="Enter video caption"
+                      className="w-full p-2 bg-white"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProductVideos((prev) =>
+                          prev.filter((_, i) => i !== index)
+                        );
+                      }}
+                      className="absolute right-2 top-2 p-1 bg-red-500 rounded-full"
+                    >
+                      <Trash2 size={12} className="text-white" />
                     </button>
                   </div>
                 ))}

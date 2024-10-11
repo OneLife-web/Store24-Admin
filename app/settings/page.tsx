@@ -2,7 +2,6 @@ import SettingsContainer from "@/components/Settings/SettingsContainer";
 import { fetchProducts, getSettings } from "@/lib/PowerHouse";
 import { Settings, updateData } from "@/types";
 import { Loader2 } from "lucide-react";
-import React from "react";
 
 const SettingsPage = async () => {
   const [settingsResult, productsResult] = await Promise.allSettled([
@@ -14,7 +13,7 @@ const SettingsPage = async () => {
     settingsResult.status === "fulfilled" ? settingsResult.value : null;
   const products: updateData[] =
     productsResult.status === "fulfilled" ? productsResult.value : [];
-
+console.log(data)
   return (
     <>
       {data ? (

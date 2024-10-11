@@ -7,7 +7,7 @@ interface ICartItem extends Document {
   quantity: number;
 }
 
-const CartItemSchema: Schema = new Schema(
+const CartItemSchema: Schema = new Schema( 
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     productId: { type: String, required: true },

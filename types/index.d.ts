@@ -39,12 +39,22 @@ export interface UpdateRequestBody {
   productId: string;
 }
 
+export interface ImageProps {
+  url: string;
+  caption: string;
+}
+
 export interface productData {
   _id?: string;
-  images: string[];
+  images: ImageProps[];
+  videos?: ImageProps[];
   title: string;
+  quantitySold?: string;
+  description?: string;
   price: number | undefined;
+  discountPrice?: number | undefined;
   features: string[];
+  colors?: string[];
   whyNeedThis: {
     title: string;
     content: string;
@@ -61,10 +71,15 @@ export interface productData {
 
 export interface updateData {
   _id?: string;
-  images: string[];
+  images: ImageProps[];
+  videos?: ImageProps[];
   title: string;
+  quantitySold?: string;
+  description?: string;
   price: number | undefined;
+  discountPrice?: number | undefined;
   features: string[];
+  colors?: string[];
   whyNeedThis: {
     title: string;
     content: string;
