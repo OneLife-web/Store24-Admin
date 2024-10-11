@@ -64,7 +64,11 @@ const OrderContainer = () => {
     );
   }
 
-  return <div className="min-h-screen lg:flex justify-center lg:mx-auto"></div>;
+  return (
+    <div className="min-h-screen lg:flex justify-center lg:mx-auto">
+      {orders && orders.length > 0 && <p>Hello</p>}
+    </div>
+  );
 };
 
 export default OrderContainer;

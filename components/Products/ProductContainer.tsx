@@ -9,7 +9,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { app } from "@/utils/firebase";
-import { Loader2, Plus, Trash2, UploadCloudIcon, X } from "lucide-react";
+import { Loader2, Plus, Trash2, UploadCloudIcon } from "lucide-react";
 import Image from "next/image";
 import { toast } from "@/hooks/use-toast";
 import { createProduct, updateProduct } from "@/lib/PowerHouse";
