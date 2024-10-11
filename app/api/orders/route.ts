@@ -1,15 +1,22 @@
-// app/api/orders/route.ts
-import { NextResponse } from "next/server";
 import { connectToDb } from "@/utils/config/mongodb";
-import Order from "@/utils/models/Order";
+import OrderModel from "@/utils/models/Order";
+import { NextResponse } from "next/server";
 
-export async function GET(req: Request) {
-  await connectToDb();
-  
+export async function GET() {
   try {
-    const orders = await Order.find().populate('items.productId');
-    return new NextResponse(JSON.stringify(orders), { status: 200 });
+    await connectToDb();
+    const orders = await OrderModel.find({});
+
+    if (!orders) {
+      return NextResponse.json({ error: "No product found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ orders }, { status: 200 });
   } catch (error) {
-    return new NextResponse(JSON.stringify({ error: "Failed to fetch orders" }), { status: 500 });
+    console.error("Error fetching products:", error);
+    return NextResponse.json(
+      { error: "Error fetching products" },
+      { status: 500 }
+    );
   }
 }

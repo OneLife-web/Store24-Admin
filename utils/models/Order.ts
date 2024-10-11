@@ -1,22 +1,68 @@
-// models/Order.ts
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
-const OrderSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+interface Order extends Document {
+  items: { name: string; image: string; price: number; quantity: number }[];
+  customerDetails: {
+    firstName: string;
+    lastName: string;
+    street: string;
+    apt?: string;
+    city: string;
+    state: string;
+    zip: string;
+    country: string;
+    phone: string;
+    email: string;
+  };
+  userId: mongoose.Types.ObjectId; // Use ObjectId here
+  status: "pending" | "processing" | "completed" | "failed";
+  total: number;
+  orderId: string;
+}
+
+const OrderSchema: Schema = new Schema({
   items: [
     {
-      productId: { type: Schema.Types.ObjectId, ref: "Product" },
-      name: String,
-      price: Number,
-      quantity: Number,
-      image: String,
+      name: { type: String, required: true },
+      image: { type: String, required: true },
+      price: { type: Number, required: true },
+      quantity: { type: Number, required: true },
     },
   ],
-  total: { type: Number, required: true },
-  paymentStatus: { type: String, required: true },
-  stripeSessionId: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
-  orderStatus: { type: String, default: "processing" }, // e.g., processing, shipped, delivered, canceled
+  customerDetails: {
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    street: { type: String, required: true },
+    apt: { type: String },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    zip: { type: String, required: true },
+    country: { type: String, required: true },
+    phone: { type: String, required: true },
+    email: { type: String, required: true },
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ["pending", "processing", "completed", "failed"],
+    default: "processing",
+  },
+  total: {
+    type: Number,
+    required: true,
+  },
+  orderId: {
+    type: String,
+    unique: true,
+    required: true,
+  },
 });
 
-export default mongoose.models.Order || mongoose.model("Order", OrderSchema);
+const OrderModel =
+  mongoose.models.Order || mongoose.model<Order>("Order", OrderSchema);
+
+export default OrderModel;
