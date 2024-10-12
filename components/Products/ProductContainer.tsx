@@ -39,9 +39,9 @@ const ProductContainer = ({
   const [productImages, setProductImages] = useState<
     { url: string; caption: string }[]
   >(data?.images || []);
-  const [productVideos, setProductVideos] = useState<
-    { url: string; caption: string }[]
-  >([]);
+  const [productImages2, setProductImages2] = useState<string[]>(
+    data.descriptionImages || []
+  );
   const [features, setFeatures] = useState<string[]>(data?.features || [""]);
   const [colors, setColors] = useState<string[]>(data?.colors || [""]);
 
@@ -58,11 +58,11 @@ const ProductContainer = ({
   //const [error, setError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [uploadingVideos, setUploadingVideos] = useState(false);
+  const [uploadingImages, setUploadingImagess] = useState(false);
 
   // Create a ref for the file input
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const videoInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef2 = useRef<HTMLInputElement>(null);
 
   // Handle file change and upload
   const handleFileChange = async (
@@ -107,45 +107,43 @@ const ProductContainer = ({
     }
   };
 
-  const handleVideoChange = async (
+  const handleFileChange2 = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const target = event.target as HTMLInputElement;
     if (!target.files || target.files.length === 0) return;
 
     const files = Array.from(target.files);
-    setUploadingVideos(true);
+    setUploadingImagess(true);
 
     const uploadPromises = files.map(async (file) => {
-      const fileRef = ref(storage, `videos/${file.name}`);
+      const fileRef = ref(storage, `images/${file.name}`);
       const uploadTask = uploadBytesResumable(fileRef, file);
 
-      return new Promise<{ url: string; caption: string }>(
-        (resolve, reject) => {
-          uploadTask.on(
-            "state_changed",
-            null,
-            (error) => {
-              console.error("Upload error:", error);
-              reject(error);
-              setUploadingVideos(false);
-            },
-            async () => {
-              const downloadURL = await getDownloadURL(fileRef);
-              resolve({ url: downloadURL, caption: "" });
-            }
-          );
-        }
-      );
+      return new Promise<string>((resolve, reject) => {
+        uploadTask.on(
+          "state_changed",
+          null,
+          (error) => {
+            console.error("Upload error:", error);
+            reject(error);
+            setUploadingImagess(false);
+          },
+          async () => {
+            const downloadURL = await getDownloadURL(fileRef);
+            resolve(downloadURL);
+          }
+        );
+      });
     });
 
     try {
-      const uploadedVideos = await Promise.all(uploadPromises);
-      setProductVideos((prev) => [...prev, ...uploadedVideos]);
+      const uploadedImages = await Promise.all(uploadPromises);
+      setProductImages2((prev) => [...prev, ...uploadedImages]);
     } catch (error) {
-      console.error("Error uploading videos:", error);
+      console.error("File upload failed:", error);
     } finally {
-      setUploadingVideos(false);
+      setUploadingImagess(false);
     }
   };
 
@@ -168,7 +166,7 @@ const ProductContainer = ({
         try {
           const payload = {
             images: productImages,
-            videos: productVideos,
+            descriptionImages: productImages2,
             title: productName,
             quantitySold,
             description: productDescription,
@@ -200,6 +198,10 @@ const ProductContainer = ({
           if (fileInputRef.current) {
             fileInputRef.current.value = "";
           }
+          // Reset the file input value
+          if (fileInputRef2.current) {
+            fileInputRef2.current.value = "";
+          }
         } catch (error) {
           console.log(error);
           setLoading(false);
@@ -214,7 +216,7 @@ const ProductContainer = ({
       try {
         const payload = {
           images: productImages,
-          videos: productVideos,
+          descriptionImages: productImages2,
           title: productName,
           quantitySold,
           description: productDescription,
@@ -258,24 +260,27 @@ const ProductContainer = ({
         <div className="bg-gray-50 grid gap-6 py-5 mt-5 pb-10 p-[3%] rounded-xl w-full">
           {error && <p className="text-red-500 text-xs text-center">{error}</p>}
           <div>
-            <label>Product Basic Info</label>
             <div className="mt-3 grid gap-4">
+              <label>Product Name</label>
               <Input
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
                 placeholder="Enter Product Name"
               />
+              <label>Product Description</label>
               <textarea
                 value={productDescription}
                 onChange={(e) => setProductDescription(e.target.value)}
                 placeholder="Enter Product Description"
                 className="rounded-lg h-[120px] py-3 custom-scrollbar block w-full px-4 focus:outline-none text-sm placeholder:font-light"
               ></textarea>
+              <label>Quantity Sold</label>
               <Input
                 value={quantitySold}
                 onChange={(e) => setQuantitySold(e.target.value)}
                 placeholder="Enter Quantity Sold"
               />
+              <label>Product Price</label>
               <Input
                 value={
                   productPrice !== undefined ? productPrice.toString() : ""
@@ -287,6 +292,7 @@ const ProductContainer = ({
                 }}
                 placeholder="Enter Product price"
               />
+              <label>Discounted Price</label>
               <Input
                 value={
                   discountPrice !== undefined ? discountPrice.toString() : ""
@@ -375,7 +381,7 @@ const ProductContainer = ({
             </div>
           </div>
           <div className="relative">
-            <label>Why You Need This</label>
+            <label>Specifications</label>
             <div className="mt-3 grid gap-4">
               {whyYouNeedThis.map((item, index) => (
                 <div key={index} className="flex items-center space-x-2">
@@ -616,22 +622,22 @@ const ProductContainer = ({
           </div>
           <div>
             <div className="flex items-center justify-between w-full">
-              <label>Product Videos</label>
+              <label>Description Images</label>
               <div className="relative">
                 <button
                   type="button"
                   onClick={() =>
-                    document.getElementById("video-upload")?.click()
+                    document.getElementById("file-upload2")?.click()
                   }
                   className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-secondaryBg"
                 >
                   <input
                     type="file"
-                    id="video-upload"
-                    ref={videoInputRef} // Create a new ref for the video input
+                    id="file-upload2"
+                    ref={fileInputRef2} // Attach the ref here
                     className="hidden"
                     multiple // Allow multiple file uploads
-                    onChange={handleVideoChange}
+                    onChange={handleFileChange2}
                   />
                   <UploadCloudIcon />
                 </button>
@@ -639,7 +645,7 @@ const ProductContainer = ({
             </div>
 
             <div className="mt-3 grid gap-4 relative pt-2">
-              {uploadingVideos && (
+              {uploadingImages && (
                 <div className="absolute z-50 left-[50%] translate-x-[-50%] top-[50%] translate-y-[-50%] flex items-center justify-center">
                   <svg
                     version="1.1"
@@ -671,34 +677,24 @@ const ProductContainer = ({
                 </div>
               )}
 
-              {/* Display uploaded videos */}
+              {/* Display uploaded images */}
               <div className="grid grid-cols-3 gap-4">
-                {productVideos.map((video, index) => (
+                {productImages2.map((image, index) => (
                   <div
                     key={index}
                     className="relative grid gap-2 rounded-lg overflow-hidden"
                   >
-                    <video
-                      src={video.url}
+                    <Image
+                      src={image}
                       width={100}
                       height={100}
-                      poster={video.url} // or a fallback image URL
+                      alt={`Uploaded image ${index + 1}`}
                       className="w-full h-[100px] object-contain"
-                    />
-                    <Input
-                      value={video.caption || ""}
-                      onChange={(e) => {
-                        const updatedVideos = [...productVideos];
-                        updatedVideos[index].caption = e.target.value;
-                        setProductVideos(updatedVideos);
-                      }}
-                      placeholder="Enter video caption"
-                      className="w-full p-2 bg-white"
                     />
                     <button
                       type="button"
                       onClick={() => {
-                        setProductVideos((prev) =>
+                        setProductImages2((prev) =>
                           prev.filter((_, i) => i !== index)
                         );
                       }}

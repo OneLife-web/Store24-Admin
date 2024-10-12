@@ -47,7 +47,7 @@ export interface ImageProps {
 export interface productData {
   _id?: string;
   images: ImageProps[];
-  videos?: ImageProps[];
+  descriptionImages?: string[];
   title: string;
   quantitySold?: string;
   description?: string;
@@ -72,7 +72,7 @@ export interface productData {
 export interface updateData {
   _id?: string;
   images: ImageProps[];
-  videos?: ImageProps[];
+  descriptionImages?: string[];
   title: string;
   quantitySold?: string;
   description?: string;

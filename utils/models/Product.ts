@@ -8,12 +8,7 @@ const productSchema = new Schema(
         caption: { type: String, required: true }, // Ensure caption is required
       },
     ],
-    videos: [
-      {
-        url: { type: String }, // Ensure URL is required
-        caption: { type: String }, // Ensure caption is required
-      },
-    ], // Add this line
+    descriptionImages: [String],
     title: { type: String, required: true },
     quantitySold: { type: String },
     description: { type: String },
