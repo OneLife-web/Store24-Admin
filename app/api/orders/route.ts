@@ -11,7 +11,7 @@ export async function GET() {
       return NextResponse.json({ error: "No product found" }, { status: 404 });
     }
 
-    return NextResponse.json({ orders }, { status: 200 });
+    return NextResponse.json({ orders: orders, status: 200 });
   } catch (error) {
     console.error("Error fetching products:", error);
     return NextResponse.json(

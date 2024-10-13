@@ -1,7 +1,7 @@
-"use client";
-
+'use client';
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { OrderTableDemo } from "../OrderTable"; // Reuse your table component
 
 interface Order {
   _id: string;
@@ -9,6 +9,11 @@ interface Order {
   status: "pending" | "processing" | "completed" | "failed";
   total: number;
   orderId: string;
+  customerDetails: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
 }
 
 const OrderContainer = () => {
@@ -18,14 +23,14 @@ const OrderContainer = () => {
 
   const fetchOrders = async () => {
     try {
-      setLoading(true); // Start loading
-      setError(null); // Reset error state before fetching
+      setLoading(true);
+      setError(null);
 
-      const res = await fetch(`/api/orders`);
+      const res = await fetch(`/api/orders`); // Replace with your actual API call
       const data = await res.json();
 
-      if (res.ok) {
-        setOrders(data);
+      if (res.status === 200) {
+        setOrders(data.orders);
       } else {
         setError(data.error || "Failed to fetch orders");
       }
@@ -33,7 +38,7 @@ const OrderContainer = () => {
       setError("Failed to fetch orders due to a network error");
       console.log(error);
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
   };
 
@@ -66,7 +71,11 @@ const OrderContainer = () => {
 
   return (
     <div className="min-h-screen lg:flex justify-center lg:mx-auto">
-      {orders && orders.length > 0 && <p>Hello</p>}
+      {orders && orders.length > 0 && (
+        <div>
+          <OrderTableDemo orders={orders} />
+        </div>
+      )}
     </div>
   );
 };

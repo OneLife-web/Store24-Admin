@@ -7,6 +7,16 @@ export interface InputProps {
   icon?: React.ReactNode;
 }
 
+export interface CartItem {
+  _id?: string;
+  productId: string;
+  productImage: string;
+  name: string;
+  price: number;
+  quantity: number;
+  color?: string;
+}
+
 export interface IBannerInput {
   title: string;
   link: string;
