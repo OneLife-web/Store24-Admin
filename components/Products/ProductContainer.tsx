@@ -40,7 +40,7 @@ const ProductContainer = ({
     { url: string; caption: string }[]
   >(data?.images || []);
   const [productImages2, setProductImages2] = useState<string[]>(
-    data.descriptionImages || []
+    data?.descriptionImages || []
   );
   const [features, setFeatures] = useState<string[]>(data?.features || [""]);
   const [colors, setColors] = useState<string[]>(data?.colors || [""]);
