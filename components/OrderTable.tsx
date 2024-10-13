@@ -96,7 +96,7 @@ export const columns: ColumnDef<Order>[] = [
   {
     id: "actions",
     header: "",
-    cell: ({ row }) => {
+    cell: () => {
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
