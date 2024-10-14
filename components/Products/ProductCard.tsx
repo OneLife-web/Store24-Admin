@@ -35,7 +35,7 @@ const ProductCard = ({ item }: { item: updateData }) => {
   return (
     <div className="bg-white rounded-lg">
       <div className="border-b h-16 m-2">
-        <p>{item.title}</p>
+        <p className="truncate-two-lines">{item.title}</p>
       </div>
       <div className="h-16 p-2 flex items-center justify-between">
         <p className="text-2xl font-medium">${item.price}.00</p>

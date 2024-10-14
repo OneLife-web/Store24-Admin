@@ -51,7 +51,7 @@ export interface UpdateRequestBody {
 
 export interface ImageProps {
   url: string;
-  caption: string;
+  caption?: string;
 }
 
 export interface productData {

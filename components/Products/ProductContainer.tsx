@@ -37,7 +37,7 @@ const ProductContainer = ({
     data?.discountPrice || undefined
   );
   const [productImages, setProductImages] = useState<
-    { url: string; caption: string }[]
+    { url: string; caption?: string }[]
   >(data?.images || []);
   const [productImages2, setProductImages2] = useState<string[]>(
     data?.descriptionImages || []

@@ -5,7 +5,7 @@ const productSchema = new Schema(
     images: [
       {
         url: { type: String, required: true }, // Ensure URL is required
-        caption: { type: String, required: true }, // Ensure caption is required
+        caption: { type: String }, // Ensure caption is required
       },
     ],
     descriptionImages: [String],
