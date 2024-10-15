@@ -49,6 +49,15 @@ export interface UpdateRequestBody {
   productId: string;
 }
 
+export interface ReviewProps {
+  _id?: string;
+  name: string;
+  comment: string;
+  rating: number;
+  country?: string;
+  date: string;
+}
+
 export interface ImageProps {
   url: string;
   caption?: string;
@@ -77,6 +86,7 @@ export interface productData {
     question: string;
     answer: string;
   }[];
+  reviews?: ReviewProps[];
 }
 
 export interface updateData {
@@ -102,6 +112,7 @@ export interface updateData {
     question: string;
     answer: string;
   }[];
+  reviews?: ReviewProps[];
 }
 
 export interface crumbsType {

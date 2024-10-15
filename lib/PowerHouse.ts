@@ -12,7 +12,7 @@ export const addSettings = async ({
 }: CreateRequestBody) => {
   try {
     const res = await fetch(
-      "https://store24-admin-sepia.vercel.app/api/settings",
+      "http://localhost:3001/api/settings",
       {
         method: "POST",
         headers: {
@@ -35,7 +35,7 @@ export const addSettings = async ({
 
 export const getSettings = async () => {
   try {
-    const res = await fetch("https://store24-admin-sepia.vercel.app/api/settings", {
+    const res = await fetch("http://localhost:3001/api/settings", {
       method: "GET",
       cache: "no-store",
     });
@@ -54,7 +54,7 @@ export const getSettings = async () => {
 
 export const updateSettings = async (payload: UpdateSettingsPayload) => {
   try {
-    const response = await fetch("https://store24-admin-sepia.vercel.app/api/settings", {
+    const response = await fetch("http://localhost:3001/api/settings", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -76,7 +76,7 @@ export const updateSettings = async (payload: UpdateSettingsPayload) => {
 
 export const fetchProducts = async () => {
   try {
-    const res = await fetch("https://store24-admin-sepia.vercel.app/api/product", {
+    const res = await fetch("http://localhost:3001/api/product", {
       method: "GET",
       cache: "no-store",
     });
@@ -95,7 +95,7 @@ export const fetchProducts = async () => {
 
 export const fetchProduct = async (id?: string) => {
   try {
-    const res = await fetch(`https://store24-admin-sepia.vercel.app/api/product/${id}`, {
+    const res = await fetch(`http://localhost:3001/api/product/${id}`, {
       method: "GET",
       cache: "no-store",
     });
@@ -112,7 +112,7 @@ export const fetchProduct = async (id?: string) => {
 
 export const createProduct = async (productData: productData) => {
   try {
-    const res = await fetch("https://store24-admin-sepia.vercel.app/api/product", {
+    const res = await fetch("http://localhost:3001/api/product", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -133,7 +133,7 @@ export const createProduct = async (productData: productData) => {
 
 export const updateProduct = async (id: string, updateData: updateData) => {
   try {
-    const res = await fetch(`https://store24-admin-sepia.vercel.app/api/product/${id}`, {
+    const res = await fetch(`http://localhost:3001/api/product/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -154,7 +154,7 @@ export const updateProduct = async (id: string, updateData: updateData) => {
 export const deleteProduct = async (id?: string) => {
   try {
     const res = await fetch(
-      `https://store24-admin-sepia.vercel.app/api/product/${id}`,
+      `http://localhost:3001/api/product/${id}`,
       {
         method: "DELETE",
       }

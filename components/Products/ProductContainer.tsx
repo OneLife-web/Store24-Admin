@@ -1,6 +1,12 @@
 "use client";
 
 import { useRef, useState } from "react";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "react-beautiful-dnd";
 import Input from "../Input";
 import {
   getStorage,
@@ -13,7 +19,8 @@ import { Loader2, Plus, Trash2, UploadCloudIcon } from "lucide-react";
 import Image from "next/image";
 import { toast } from "@/hooks/use-toast";
 import { createProduct, updateProduct } from "@/lib/PowerHouse";
-import { updateData } from "@/types";
+import { ReviewProps, updateData } from "@/types";
+import { CountryList } from "../CountryList";
 
 const storage = getStorage(app);
 
@@ -28,6 +35,7 @@ const ProductContainer = ({
   const [productDescription, setProductDescription] = useState(
     data?.description || ""
   );
+  const [reviews, setReviews] = useState<ReviewProps[]>(data?.reviews || []);
   const [quantitySold, setQuantitySold] = useState(data?.quantitySold || "");
   const [error, setError] = useState("");
   const [productPrice, setProductPrice] = useState<number | undefined>(
@@ -63,6 +71,18 @@ const ProductContainer = ({
   // Create a ref for the file input
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef2 = useRef<HTMLInputElement>(null);
+
+  const onDragEnd = (result: DropResult) => {
+    const { source, destination } = result;
+
+    if (!destination) return; // Dropped outside the list
+
+    const reorderedImages = [...productImages];
+    const [movedImage] = reorderedImages.splice(source.index, 1); // Remove the dragged image
+    reorderedImages.splice(destination.index, 0, movedImage); // Insert it at the drop location
+
+    setProductImages(reorderedImages); // Update state with the new image order
+  };
 
   // Handle file change and upload
   const handleFileChange = async (
@@ -147,6 +167,19 @@ const ProductContainer = ({
     }
   };
 
+  const index = 0;
+
+  const handleCountrySelect = (country: string | undefined) => {
+    const newReviews = [...reviews];
+
+    // Directly access the property without optional chaining
+    if (newReviews[index]) {
+      newReviews[index].country = country; // Update country with selected value
+    }
+
+    setReviews(newReviews);
+  };
+
   //handle submit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -177,6 +210,7 @@ const ProductContainer = ({
             whyNeedThis: whyYouNeedThis,
             characteristics,
             faqs,
+            reviews,
           };
           const res = await createProduct(payload);
           if (res.status === 200) {
@@ -227,6 +261,7 @@ const ProductContainer = ({
           whyNeedThis: whyYouNeedThis,
           characteristics,
           faqs,
+          reviews,
         };
 
         if (!data._id) {
@@ -529,17 +564,15 @@ const ProductContainer = ({
               <div className="relative">
                 <button
                   type="button"
-                  onClick={() =>
-                    document.getElementById("file-upload")?.click()
-                  }
+                  onClick={() => fileInputRef.current?.click()}
                   className="flex items-center justify-center w-[40px] h-[40px] rounded-full bg-secondaryBg"
                 >
                   <input
                     type="file"
                     id="file-upload"
-                    ref={fileInputRef} // Attach the ref here
+                    ref={fileInputRef}
                     className="hidden"
-                    multiple // Allow multiple file uploads
+                    multiple
                     onChange={handleFileChange}
                   />
                   <UploadCloudIcon />
@@ -550,6 +583,7 @@ const ProductContainer = ({
             <div className="mt-3 grid gap-4 relative pt-2">
               {uploading && (
                 <div className="absolute z-50 left-[50%] translate-x-[-50%] top-[50%] translate-y-[-50%] flex items-center justify-center">
+                  {/* Loading spinner */}
                   <svg
                     version="1.1"
                     xmlns="http://www.w3.org/2000/svg"
@@ -581,43 +615,64 @@ const ProductContainer = ({
               )}
 
               {/* Display uploaded images */}
-              <div className="grid grid-cols-3 gap-4">
-                {productImages.map((image, index) => (
-                  <div
-                    key={index}
-                    className="relative grid gap-2 rounded-lg overflow-hidden"
-                  >
-                    <Image
-                      src={image.url}
-                      width={100}
-                      height={100}
-                      alt={`Uploaded image ${index + 1}`}
-                      className="w-full h-[100px] object-contain"
-                    />
-                    <Input
-                      value={image.caption || ""}
-                      onChange={(e) => {
-                        const updatedImages = [...productImages];
-                        updatedImages[index].caption = e.target.value;
-                        setProductImages(updatedImages);
-                      }}
-                      placeholder="Enter image caption"
-                      className="w-full p-2 bg-white"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setProductImages((prev) =>
-                          prev.filter((_, i) => i !== index)
-                        );
-                      }}
-                      className="absolute right-2 top-2 p-1 bg-red-500 rounded-full"
+              <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="image-grid" direction="horizontal">
+                  {(provided) => (
+                    <div
+                      className="grid grid-cols-3 gap-4"
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
                     >
-                      <Trash2 size={12} className="text-white" />
-                    </button>
-                  </div>
-                ))}
-              </div>
+                      {productImages.map((image, index) => (
+                        <Draggable
+                          key={`image-${index}`}
+                          draggableId={`image-${index}`} // Ensure this ID is unique
+                          index={index}
+                        >
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              className="relative grid gap-2 rounded-lg overflow-hidden"
+                            >
+                              <Image
+                                src={image.url}
+                                width={100}
+                                height={100}
+                                alt={`Uploaded image ${index + 1}`}
+                                className="w-full h-[100px] object-contain"
+                              />
+                              <Input
+                                value={image.caption || ""}
+                                onChange={(e) => {
+                                  const updatedImages = [...productImages];
+                                  updatedImages[index].caption = e.target.value;
+                                  setProductImages(updatedImages);
+                                }}
+                                placeholder="Enter image caption"
+                                className="w-full p-2 bg-white"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setProductImages((prev) =>
+                                    prev.filter((_, i) => i !== index)
+                                  );
+                                }}
+                                className="absolute right-2 top-2 p-1 bg-red-500 rounded-full"
+                              >
+                                <Trash2 size={12} className="text-white" />
+                              </button>
+                            </div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
             </div>
           </div>
           <div>
@@ -705,6 +760,98 @@ const ProductContainer = ({
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+          <div className="relative">
+            <label>Reviews</label>
+            <div className="mt-3 grid lg:gap-4">
+              {reviews.map((review, index) => (
+                <div key={index} className="grid grid-cols-2 gap-5">
+                  <Input
+                    value={review.name}
+                    onChange={(e) => {
+                      const newReviews = [...reviews];
+                      newReviews[index].name = e.target.value;
+                      setReviews(newReviews);
+                    }}
+                    placeholder="Enter reviewer's name"
+                  />
+                  <Input
+                    value={review.comment}
+                    onChange={(e) => {
+                      const newReviews = [...reviews];
+                      newReviews[index].comment = e.target.value;
+                      setReviews(newReviews);
+                    }}
+                    placeholder="Enter review comment"
+                  />
+                  <Input
+                    value={review.date}
+                    onChange={(e) => {
+                      const newReviews = [...reviews];
+                      newReviews[index].date = e.target.value;
+                      setReviews(newReviews);
+                    }}
+                    placeholder="Enter review date (October 10, 2023)"
+                  />
+                  <Input
+                    value={
+                      review.rating !== undefined
+                        ? review.rating.toString()
+                        : "0"
+                    }
+                    onChange={(e) => {
+                      const newReviews: ReviewProps[] = [...reviews];
+
+                      // Get the input value and ensure it is a valid number
+                      const value = e.target.value;
+
+                      // Convert to number or default to 0 if invalid
+                      const numericValue = value ? Number(value) : 0;
+                      newReviews[index].rating = numericValue;
+
+                      // Check if the rating is within the valid range
+                      if (numericValue < 1 || numericValue > 5) {
+                        newReviews[index].rating = 0; // Reset or handle as needed
+                      }
+
+                      setReviews(newReviews);
+                    }}
+                    placeholder="Enter review rating (1-5)"
+                  />
+                  <CountryList
+                    selectedCountry={review.country}
+                    setSelectedCountry={handleCountrySelect}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const newReviews = reviews.filter((_, i) => i !== index);
+                      setReviews(newReviews);
+                    }}
+                  >
+                    <Trash2 color="red" size={16} />
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="bg-secondaryBg flex items-center justify-center absolute top-[-15px] right-0 w-[25px] mt-5 rounded-full h-[25px] font-medium"
+                onClick={() =>
+                  setReviews([
+                    ...reviews,
+                    {
+                      name: "",
+                      comment: "",
+                      date: "",
+                      rating: 0, // Initialize rating as a number
+                      country: "",
+                    },
+                  ])
+                }
+              >
+                <Plus size={13} />
+              </button>
             </div>
           </div>
         </div>

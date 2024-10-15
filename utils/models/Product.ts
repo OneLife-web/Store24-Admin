@@ -1,10 +1,21 @@
 import mongoose, { Schema } from "mongoose";
 
+const reviewSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    comment: { type: String, required: true },
+    date: { type: String, required: true }, // You can use Date type if you prefer
+    rating: { type: Number, required: true, min: 1, max: 5 }, // Enforce rating limits
+    country: { type: String }, // Optional, if you want to allow empty countries
+  },
+  { timestamps: true } // Timestamps for each review
+);
+
 const productSchema = new Schema(
   {
     images: [
       {
-        url: { type: String, required: true }, // Ensure URL is required
+        url: { type: String, required: true },
         caption: { type: String }, // Ensure caption is required
       },
     ],
@@ -34,6 +45,7 @@ const productSchema = new Schema(
         answer: { type: String, required: true },
       },
     ],
+    reviews: [reviewSchema], // Add the reviews field here
   },
   { timestamps: true }
 );
