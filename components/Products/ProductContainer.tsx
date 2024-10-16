@@ -167,12 +167,10 @@ const ProductContainer = ({
     }
   };
 
-  const index = 0;
-
-  const handleCountrySelect = (country: string | undefined) => {
+  const handleCountrySelect = (country: string | undefined, index: number) => {
     const newReviews = [...reviews];
 
-    // Directly access the property without optional chaining
+    // Update the specific review's country using the passed index
     if (newReviews[index]) {
       newReviews[index].country = country; // Update country with selected value
     }
@@ -821,7 +819,9 @@ const ProductContainer = ({
                   />
                   <CountryList
                     selectedCountry={review.country}
-                    setSelectedCountry={handleCountrySelect}
+                    setSelectedCountry={(country) =>
+                      handleCountrySelect(country, index)
+                    } // Pass index here
                   />
                   <button
                     type="button"
