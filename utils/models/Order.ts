@@ -19,6 +19,7 @@ interface Order extends Document {
   total: number;
   orderId: string;
   packageInfo: string;
+  trackingId?: string;
 }
 
 const OrderSchema: Schema = new Schema({
@@ -62,6 +63,10 @@ const OrderSchema: Schema = new Schema({
     required: true,
   },
   packageInfo: String,
+  trackingId: {
+    type: String,
+    required: false, // This will be added after the order is processed
+  },
 });
 
 const OrderModel =

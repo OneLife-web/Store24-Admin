@@ -13,7 +13,12 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import {
+  ArrowUpDown,
+  ChevronDown,
+  Loader2,
+  MoreHorizontal,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -56,6 +61,7 @@ interface Order {
   };
   packageInfo?: string;
   total?: number;
+  trackingId?: string;
 }
 
 interface OrderTableProps {
@@ -144,6 +150,40 @@ export function OrderTableDemo({ orders }: OrderTableProps) {
   const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
   const [isCustomerModal, setIsCustomerModal] = React.useState(false);
   const [isTrackingModal, setIsTrackingModal] = React.useState(false);
+  const [trackingId, setTrackingId] = React.useState(
+    selectedOrder?.trackingId || ""
+  );
+  const [loading, setLoading] = React.useState(false);
+
+  const handleSubmit = async () => {
+    if (!trackingId) {
+      alert("Please enter a tracking ID");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ orderId: selectedOrder?.orderId, trackingId }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      setIsTrackingModal(false);
+      setTrackingId("");
+      alert("Tracking ID updated successfully");
+    } catch (error) {
+      console.error("Error sending tracking ID:", error);
+      // Handle error here, e.g., showing an error toast
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -393,8 +433,19 @@ export function OrderTableDemo({ orders }: OrderTableProps) {
       )}
       {selectedOrder && isTrackingModal && (
         <UtilityModal open={isTrackingModal} setOpen={setIsTrackingModal}>
-          <div className="bg-white rounded-xl p-3 grid gap-5 py-6 max-h-[80vh] h-full overflow-y-scroll custom-scrollbar">
-            <div></div>
+          <div className="bg-white rounded-xl p-3 grid gap-5 py-10 max-h-[80vh] h-full overflow-y-scroll">
+            <Input
+              value={trackingId}
+              onChange={(e) => setTrackingId(e.target.value)}
+              placeholder="Enter Tracking ID"
+              className="h-[46px]"
+            />
+            <button
+              onClick={handleSubmit}
+              className="w-full rounded-lg bg-secondaryBg flex items-center justify-center font-medium h-[46px]"
+            >
+              {loading ? <Loader2 className="animate-spin" /> : "Send"}
+            </button>
           </div>
         </UtilityModal>
       )}
