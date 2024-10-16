@@ -321,7 +321,7 @@ export function OrderTableDemo({ orders }: OrderTableProps) {
           </Button>
         </div>
       </div>
-      {selectedOrder && (
+      {selectedOrder && isCustomerModal && (
         <UtilityModal open={isCustomerModal} setOpen={setIsCustomerModal}>
           <div className="bg-white rounded-xl p-3 grid gap-5 py-6 max-h-[80vh] h-full overflow-y-scroll custom-scrollbar">
             <div>
@@ -388,6 +388,13 @@ export function OrderTableDemo({ orders }: OrderTableProps) {
               </div>
             </div>
             <p className="font-medium">Total Spent: ${selectedOrder.total}</p>
+          </div>
+        </UtilityModal>
+      )}
+      {selectedOrder && isTrackingModal && (
+        <UtilityModal open={isTrackingModal} setOpen={setIsTrackingModal}>
+          <div className="bg-white rounded-xl p-3 grid gap-5 py-6 max-h-[80vh] h-full overflow-y-scroll custom-scrollbar">
+            <div></div>
           </div>
         </UtilityModal>
       )}
