@@ -18,6 +18,7 @@ interface Order extends Document {
   status: "pending" | "processing" | "completed" | "failed";
   total: number;
   orderId: string;
+  packageInfo: string;
 }
 
 const OrderSchema: Schema = new Schema({
@@ -60,6 +61,7 @@ const OrderSchema: Schema = new Schema({
     unique: true,
     required: true,
   },
+  packageInfo: String,
 });
 
 const OrderModel =

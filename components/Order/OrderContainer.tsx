@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { OrderTableDemo } from "../OrderTable"; // Reuse your table component
@@ -60,7 +60,6 @@ const OrderContainer = () => {
         {error === "No orders found for this user" ? (
           <div className="flex flex-col items-center justify-center gap-3">
             <p className="font-semibold text-lg">No orders yet</p>
-            <p>Go to store to place an order.</p>
           </div>
         ) : (
           <p className="text-red-500">{error}</p>

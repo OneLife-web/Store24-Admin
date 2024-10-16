@@ -2,19 +2,29 @@
 
 import * as React from "react";
 import {
-  flexRender,
-  useReactTable,
   ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
 } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuItem,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -23,173 +33,364 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CartItem } from "@/types";
+import { cn } from "@/lib/utils";
+import { UtilityModal } from "./UtiltyModal";
+import Image from "next/image";
 
-// The order data structure
-export interface Order {
+interface Order {
   _id: string;
   items: { name: string; image: string; price: number; quantity: number }[];
   status: "pending" | "processing" | "completed" | "failed";
   orderId: string;
-  customerDetails: { firstName: string; lastName: string; email: string };
-}
-
-interface Customer {
-  firstName: string;
-  lastName: string;
-  street: string;
-  apt?: string;
-  city: string;
-  state: string;
-  zip: string;
-  country: string;
-  phone: string;
-  email: string;
+  customerDetails: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    street?: string;
+    apt?: string;
+    city?: string;
+    state?: string;
+    zip?: string;
+    country?: string;
+    phone?: string;
+  };
+  packageInfo?: string;
+  total?: number;
 }
 
 interface OrderTableProps {
   orders: Order[];
 }
 
-// Memoize Columns Definition
 export const columns: ColumnDef<Order>[] = [
   {
     accessorKey: "orderId",
     header: "Order ID",
-    cell: ({ row }) => <span>{row.getValue("orderId")}</span>,
-  },
-  {
-    accessorKey: "customerDetails",
-    header: "Username",
-    cell: ({ row }) => {
-      const customer: Customer = row.getValue("customerDetails");
-      return (
-        <span>
-          {customer.firstName} {customer.lastName}
-        </span>
-      );
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
     cell: ({ row }) => (
-      <span className="capitalize">{row.getValue("status")}</span>
+      <div className="text-xs">#{row.getValue("orderId")}</div>
     ),
   },
   {
     accessorKey: "items",
     header: "Items",
     cell: ({ row }) => {
-      const items: CartItem[] = row.getValue("items");
+      const items = row.getValue("items") as {
+        name: string;
+        image: string;
+        price: number;
+        quantity: number;
+      }[];
+
       return (
-        <div>
-          {items.map((item, index: number) => (
-            <p key={index}>
-              {item.name} (x{item.quantity})
-            </p>
+        <div className="w-[300px] grid gap-3">
+          {items.map((item) => (
+            <div key={item.name} className="text-xs truncate-two-lines">
+              {item.name} (Qty: {item.quantity}) - ${item.price.toFixed(2)}
+            </div>
           ))}
         </div>
       );
     },
   },
   {
-    id: "actions",
-    header: "",
-    cell: () => {
+    accessorKey: "status",
+    header: ({ column }) => {
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>View Order</DropdownMenuItem>
-            <DropdownMenuItem>Cancel Order</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string;
+
+      return (
+        <div
+          className={cn("w-fit rounded-full px-[10px] py-[5px]", {
+            "bg-[#F8BCBC] font-clashmd text-[10px] md:text-xs text-[#8B1A1A]":
+              status === "failed" || status === "completed",
+            "bg-[#BAD9F7] font-clashmd text-[10px] md:text-xs text-[#1673CC]":
+              status === "pending",
+            "bg-[#BAF7BA] font-clashmd text-[10px] md:text-xs text-[#1B691B]":
+              status === "processing",
+          })}
+        >
+          {status}
+        </div>
+      );
+    },
+    enableSorting: true, // Enable sorting
+  },
+  {
+    accessorKey: "customerDetails",
+    header: "Customer",
+    cell: ({ row }) => {
+      const customerDetails = row.getValue("customerDetails") as {
+        firstName: string;
+        lastName: string;
+      };
+      return (
+        <div className="text-xs">{`${customerDetails.firstName} ${customerDetails.lastName}`}</div>
       );
     },
   },
 ];
 
-// Table Component with Search
 export function OrderTableDemo({ orders }: OrderTableProps) {
-  // State for search input
-  const [search, setSearch] = React.useState("");
+  const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
+  const [isCustomerModal, setIsCustomerModal] = React.useState(false);
+  const [isTrackingModal, setIsTrackingModal] = React.useState(false);
 
-  // Memoize the filtered orders based on search input
-  const filteredOrders = React.useMemo(() => {
-    return orders.filter(
-      (order) =>
-        order.customerDetails.firstName
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-        order.customerDetails.lastName
-          .toLowerCase()
-          .includes(search.toLowerCase()) ||
-        order.orderId.toLowerCase().includes(search.toLowerCase())
-    );
-  }, [orders, search]);
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
 
-  // Memoize table configuration
   const table = useReactTable({
-    data: filteredOrders, // Use filtered orders instead of full orders list
+    data: orders,
     columns,
-    getCoreRowModel: getCoreRowModel(), // Correctly use getCoreRowModel
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+    // Custom filter logic
+    globalFilterFn: (row, filterValue) => {
+      const orderId = row.getValue("orderId") as string;
+      const customerDetails = row.getValue("customerDetails") as {
+        firstName: string;
+        lastName: string;
+      };
+      const customerName =
+        `${customerDetails.firstName} ${customerDetails.lastName}`.toLowerCase();
+
+      // Allow filtering by orderId or customer name
+      return (
+        orderId.includes(filterValue.toLowerCase()) ||
+        customerName.includes(filterValue.toLowerCase())
+      );
+    },
   });
 
   return (
-    <div className="rounded-md border">
-      {/* Search Input */}
-      <div className="p-4">
-        <input
-          type="text"
-          placeholder="Search by Order ID or Customer Name"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border p-2 w-full rounded-md"
+    <div className="w-full">
+      <div className="flex gap-3 items-center py-4">
+        <Input
+          placeholder="Filter order ID, customer names..."
+          value={
+            (table.getColumn("customerDetails")?.getFilterValue() as string) ??
+            ""
+          }
+          onChange={(event) =>
+            table
+              .getColumn("customerDetails")
+              ?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
         />
-      </div>
-
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </TableHead>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="ml-auto">
+              Columns <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {table
+              .getAllColumns()
+              .filter((column) => column.getCanHide())
+              .map((column) => (
+                <DropdownMenuCheckboxItem
+                  key={column.id}
+                  className="capitalize"
+                  checked={column.getIsVisible()}
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                >
+                  {column.id}
+                </DropdownMenuCheckboxItem>
               ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
                 ))}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No orders found.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  onClick={() => setSelectedOrder(row.original)}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                  {/* Dropdown Menu for actions */}
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-white">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem
+                          onClick={() => setIsCustomerModal(true)}
+                        >
+                          View Order details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => setIsTrackingModal(true)}
+                        >
+                          Send Tracking ID
+                        </DropdownMenuItem>
+                        <DropdownMenuItem>Mark as completed</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
+      {selectedOrder && (
+        <UtilityModal open={isCustomerModal} setOpen={setIsCustomerModal}>
+          <div className="bg-white rounded-xl p-3 grid gap-5 py-6 max-h-[80vh] h-full overflow-y-scroll custom-scrollbar">
+            <div>
+              <h1 className="text-lg font-medium">Order Details</h1>
+              <div className="grid gap-3 mt-2">
+                <p className="text-sm">Order ID: #{selectedOrder?.orderId}</p>
+                <div className="grid gap-3">
+                  {selectedOrder?.items.map((item) => (
+                    <div key={item.image} className="flex items-center gap-3">
+                      <div className="w-fit relative">
+                        <Image
+                          src={item.image}
+                          width={45}
+                          height={45}
+                          alt="product Image"
+                          className="rounded-lg min-w-[45px]"
+                        />
+                        <div className="size-4 flex items-center justify-center text-[10px] rounded-full bg-black text-white absolute -top-2 -right-2">
+                          {item.quantity}
+                        </div>
+                      </div>
+                      <p className="text-xs">
+                        {item.name} -{" "}
+                        <span className="font-medium">${item.price}</span>
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div>
+              <h1 className="text-lg font-medium">Customer Details</h1>
+              <div className="grid gap-3 mt-2 text-sm">
+                <p className="text-sm">
+                  Name: {selectedOrder?.customerDetails.firstName}{" "}
+                  {selectedOrder?.customerDetails.firstName}
+                </p>
+                <p className="text-sm">
+                  Email : {selectedOrder?.customerDetails.email}
+                </p>
+                <p className="text-sm">
+                  Phone : {selectedOrder?.customerDetails.phone}
+                </p>
+                <p className="text-sm">
+                  Street : {selectedOrder?.customerDetails.street}
+                </p>
+                <p className="text-sm">
+                  Country : {selectedOrder?.customerDetails.country}
+                </p>
+                <p className="text-sm">
+                  State : {selectedOrder?.customerDetails.state}
+                </p>
+                <p className="text-sm">
+                  City : {selectedOrder?.customerDetails.city}
+                </p>
+                {selectedOrder?.customerDetails.apt && (
+                  <p className="text-sm">
+                    Apt : {selectedOrder?.customerDetails.apt}
+                  </p>
+                )}
+                <p className="text-sm">
+                  Zip Code : {selectedOrder?.customerDetails.zip}
+                </p>
+              </div>
+            </div>
+            <p className="font-medium">Total Spent: ${selectedOrder.total}</p>
+          </div>
+        </UtilityModal>
+      )}
     </div>
   );
 }

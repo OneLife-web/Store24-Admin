@@ -3,8 +3,7 @@ import React from "react";
 
 const OrderPage = () => {
   return (
-    <main>
-      <section>Filter, sort and search order</section>
+    <main className="px-[3%]">
       <section>
         <OrderContainer />
       </section>
