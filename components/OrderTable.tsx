@@ -250,7 +250,7 @@ export function OrderTableDemo({ orders }: OrderTableProps) {
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent className="bg-white" align="end">
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
