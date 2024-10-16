@@ -362,7 +362,7 @@ export function OrderTableDemo({ orders }: OrderTableProps) {
         </div>
       </div>
       {selectedOrder && isCustomerModal && (
-        <UtilityModal open={isCustomerModal} setOpen={setIsCustomerModal}>
+        <UtilityModal setOpen={setIsCustomerModal}>
           <div className="bg-white rounded-xl p-3 grid gap-5 py-6 max-h-[80vh] h-full overflow-y-scroll custom-scrollbar">
             <div>
               <h1 className="text-lg font-medium">Order Details</h1>
@@ -432,10 +432,14 @@ export function OrderTableDemo({ orders }: OrderTableProps) {
         </UtilityModal>
       )}
       {selectedOrder && isTrackingModal && (
-        <UtilityModal open={isTrackingModal} setOpen={setIsTrackingModal}>
-          <div className="bg-white rounded-xl p-3 grid gap-5 py-10 max-h-[80vh] h-full overflow-y-scroll">
+        <UtilityModal setOpen={setIsTrackingModal}>
+          <div className="bg-white rounded-xl p-3 grid gap-5 py-10 min-w-[80vw] md:min-w-[50vw] max-h-[80vh] h-full overflow-y-scroll">
             <Input
-              value={trackingId}
+              defaultValue={
+                selectedOrder?.trackingId !== ""
+                  ? selectedOrder.trackingId
+                  : trackingId
+              }
               onChange={(e) => setTrackingId(e.target.value)}
               placeholder="Enter Tracking ID"
               className="h-[46px]"
