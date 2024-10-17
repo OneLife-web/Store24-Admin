@@ -226,6 +226,7 @@ export function OrderTableDemo({ orders, onStatusChange }: OrderTableProps) {
       columnVisibility,
       rowSelection,
     },
+    pageSize: 10,
     // Custom filter logic
     globalFilterFn: (row, filterValue) => {
       const orderId = row.getValue("orderId") as string;
