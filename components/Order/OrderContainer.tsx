@@ -6,7 +6,7 @@ import { OrderTableDemo } from "../OrderTable"; // Reuse your table component
 interface Order {
   _id: string;
   items: { name: string; image: string; price: number; quantity: number }[];
-  status: "pending" | "processing" | "completed" | "failed";
+  status: "pending" | "processing" | "completed" | "cancelled";
   total: number;
   orderId: string;
   customerDetails: {
