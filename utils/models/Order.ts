@@ -15,7 +15,7 @@ interface Order extends Document {
     email: string;
   };
   userId: mongoose.Types.ObjectId; // Use ObjectId here
-  status: "pending" | "processing" | "completed" | "failed";
+  status: "pending" | "processing" | "completed" | "cancelled";
   total: number;
   orderId: string;
   packageInfo: string;
@@ -50,7 +50,7 @@ const OrderSchema: Schema = new Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "processing", "completed", "failed"],
+    enum: ["pending", "processing", "completed", "cancelled"],
     default: "processing",
   },
   total: {

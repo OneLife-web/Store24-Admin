@@ -45,7 +45,7 @@ import Image from "next/image";
 interface Order {
   _id: string;
   items: { name: string; image: string; price: number; quantity: number }[];
-  status: "pending" | "processing" | "completed" | "failed";
+  status: "pending" | "processing" | "completed" | "cancelled";
   orderId: string;
   customerDetails: {
     firstName: string;
@@ -66,6 +66,7 @@ interface Order {
 
 interface OrderTableProps {
   orders: Order[];
+  onStatusChange: () => void;
 }
 
 export const columns: ColumnDef<Order>[] = [
@@ -118,7 +119,7 @@ export const columns: ColumnDef<Order>[] = [
         <div
           className={cn("w-fit rounded-full px-[10px] py-[5px]", {
             "bg-[#F8BCBC] font-clashmd text-[10px] md:text-xs text-[#8B1A1A]":
-              status === "failed" || status === "completed",
+              status === "cancelled" || status === "completed",
             "bg-[#BAD9F7] font-clashmd text-[10px] md:text-xs text-[#1673CC]":
               status === "pending",
             "bg-[#BAF7BA] font-clashmd text-[10px] md:text-xs text-[#1B691B]":
@@ -146,7 +147,7 @@ export const columns: ColumnDef<Order>[] = [
   },
 ];
 
-export function OrderTableDemo({ orders }: OrderTableProps) {
+export function OrderTableDemo({ orders, onStatusChange }: OrderTableProps) {
   const [selectedOrder, setSelectedOrder] = React.useState<Order | null>(null);
   const [isCustomerModal, setIsCustomerModal] = React.useState(false);
   const [isTrackingModal, setIsTrackingModal] = React.useState(false);
@@ -154,6 +155,21 @@ export function OrderTableDemo({ orders }: OrderTableProps) {
     selectedOrder?.trackingId || ""
   );
   const [loading, setLoading] = React.useState(false);
+
+  const handleStatusChange = async (orderId: string, status: string) => {
+    const response = await fetch(`/api/orders/${orderId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status }),
+    });
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+    alert("Order status updated successfully");
+    await onStatusChange();
+  };
 
   const handleSubmit = async () => {
     if (!trackingId) {
@@ -322,7 +338,26 @@ export function OrderTableDemo({ orders }: OrderTableProps) {
                         >
                           Send Tracking ID
                         </DropdownMenuItem>
-                        <DropdownMenuItem>Mark as completed</DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            handleStatusChange(
+                              row.original.orderId,
+                              "completed"
+                            )
+                          }
+                        >
+                          Mark as Completed
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            handleStatusChange(
+                              row.original.orderId,
+                              "cancelled"
+                            )
+                          }
+                        >
+                          Cancel Order
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -424,6 +459,9 @@ export function OrderTableDemo({ orders }: OrderTableProps) {
                 )}
                 <p className="text-sm">
                   Zip Code : {selectedOrder?.customerDetails.zip}
+                </p>
+                <p className="text-sm">
+                  Delivery Instruction: {selectedOrder?.packageInfo}
                 </p>
               </div>
             </div>

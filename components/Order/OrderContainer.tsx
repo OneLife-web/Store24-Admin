@@ -72,7 +72,7 @@ const OrderContainer = () => {
     <div className="min-h-screen lg:flex justify-center lg:mx-auto">
       {orders && orders.length > 0 && (
         <div>
-          <OrderTableDemo orders={orders} />
+          <OrderTableDemo orders={orders} onStatusChange={fetchOrders} />
         </div>
       )}
     </div>
