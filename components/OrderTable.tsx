@@ -226,7 +226,6 @@ export function OrderTableDemo({ orders, onStatusChange }: OrderTableProps) {
       columnVisibility,
       rowSelection,
     },
-    pageSize: 10,
     // Custom filter logic
     globalFilterFn: (row, filterValue) => {
       const orderId = row.getValue("orderId") as string;
@@ -244,6 +243,11 @@ export function OrderTableDemo({ orders, onStatusChange }: OrderTableProps) {
       );
     },
   });
+
+  // Set the initial page size
+  React.useEffect(() => {
+    table.setPageSize(10); // Set the desired page size here
+  }, [table]);
 
   return (
     <div className="w-full">
