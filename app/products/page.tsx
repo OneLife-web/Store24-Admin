@@ -11,7 +11,7 @@ const ProductPage = async () => {
     <main className="pt-5 pb-20 px-[3%] min-h-[100vh]">
       <SearchForm />
       {data ? (
-        data.length > 0 ? (
+        data.reverse().length > 0 ? (
           <div className="bg-gray-50 grid gap-2 rounded-lg p-2 mt-6">
             {data.map((item) => (
               <ProductCard key={item._id} item={item} />
